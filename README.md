@@ -30,7 +30,7 @@ Shortlink yang sudah dibuat tetap dapat dibuka oleh siapa saja seperti biasa, ta
 - PHP 8.1 atau lebih baru
 - PHP cURL dan OpenSSL
 - HTTPS wajib
-- AuthMgrPlus 2.3.1 wajib untuk pemisahan link per pengguna
+- [AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus) 2.3.1 wajib untuk pemisahan link per pengguna
 
 ## 1. Microsoft Entra App Registration
 
@@ -79,6 +79,8 @@ Client Secret juga dapat disimpan sebagai environment variable `TELU_ENTRA_CLIEN
 Tenant ID, Client ID, email Administrator/Editor, durasi sesi, serta pembatasan Group/App Role dimasukkan melalui menu plugin.
 
 ## 4. AuthMgrPlus
+
+Unduh dan pasang plugin wajib dari repository resmi: [joshp23/YOURLS-AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus).
 
 AuthMgrPlus wajib aktif sebelum tes dan aktivasi SSO. Plugin otomatis menambahkan pengguna Microsoft ke role AuthMgrPlus pada setiap request:
 
