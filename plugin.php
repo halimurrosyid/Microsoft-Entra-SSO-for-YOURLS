@@ -3,7 +3,7 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://it.telkomuniversity.ac.id/
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 1.4.4
+Version: 1.5.0
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '1.4.4' );
+define( 'TELU_ENTRA_SSO_VERSION', '1.5.0' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -34,6 +34,11 @@ yourls_add_filter( 'logout_link', 'telu_entra_display_name_in_header', 20 );
 yourls_add_action( 'pre_load_template', 'telu_entra_protect_homepage', 1 );
 yourls_add_action( 'logout', 'telu_entra_logout' );
 yourls_add_action( 'login_form_bottom', 'telu_entra_local_login_microsoft_button' );
+yourls_add_action( 'auth_successful', 'telu_entra_harden_authmgr_roles', 1 );
+yourls_add_filter( 'admin_list_where', 'telu_entra_strict_owner_list_where', 99 );
+yourls_add_filter( 'get_db_stats', 'telu_entra_strict_owner_db_stats', 99 );
+yourls_add_filter( 'api_url_stats', 'telu_entra_strict_owner_api_stats', 99 );
+yourls_add_action( 'pre_yourls_infos', 'telu_entra_strict_owner_info_access', 1 );
 
 if ( function_exists( 'yourls_register_plugin_page' ) ) {
     yourls_register_plugin_page(
@@ -730,6 +735,127 @@ function telu_entra_assign_authmgr_role( $email ) {
     if ( ! in_array( $email, array_map( 'strtolower', $amp_role_assignment[ $role ] ), true ) ) {
         $amp_role_assignment[ $role ][] = $email;
     }
+
+    telu_entra_harden_authmgr_roles();
+}
+
+/**
+ * AuthMgrPlus normally lets Editors see every URL and lets non-admin users see
+ * anonymous legacy URLs. Keep elevated cross-user access exclusive to the
+ * Administrator role; Editor and Contributor remain owners of their own URLs.
+ */
+function telu_entra_harden_authmgr_roles() {
+    global $amp_role_capabilities;
+
+    if ( ! telu_entra_authmgr_available() || ! function_exists( 'amp_env_check' ) ) {
+        return;
+    }
+
+    amp_env_check();
+    if ( ! is_array( $amp_role_capabilities ) ) {
+        return;
+    }
+
+    $admin_only = array( 'ViewAll', 'ManageAnonURL', 'ManageUsrsURL' );
+    foreach ( $amp_role_capabilities as $role => $capabilities ) {
+        if ( strtolower( (string) $role ) === 'administrator' || ! is_array( $capabilities ) ) {
+            continue;
+        }
+        $amp_role_capabilities[ $role ] = array_values( array_diff( $capabilities, $admin_only ) );
+    }
+}
+
+function telu_entra_current_user_is_administrator() {
+    global $amp_role_assignment;
+
+    $user = defined( 'YOURLS_USER' ) ? strtolower( trim( (string) YOURLS_USER ) ) : '';
+    if ( $user === '' || ! is_array( $amp_role_assignment ) ) {
+        return false;
+    }
+
+    foreach ( $amp_role_assignment as $role => $users ) {
+        if ( strtolower( (string) $role ) !== 'administrator' || ! is_array( $users ) ) {
+            continue;
+        }
+        return in_array( $user, array_map( 'strtolower', array_map( 'strval', $users ) ), true );
+    }
+
+    return false;
+}
+
+function telu_entra_strict_owner_list_where( $where ) {
+    if ( telu_entra_current_user_is_administrator() || ! is_array( $where ) ) {
+        return $where;
+    }
+
+    $sql = isset( $where['sql'] ) ? (string) $where['sql'] : '';
+    $sql = preg_replace(
+        '/\s+AND\s+\(\s*`user`\s*=\s*:user\s+OR\s+`user`\s+IS\s+NULL\s*\)\s*/i',
+        ' ',
+        $sql
+    );
+    $where['sql'] = $sql . ' AND (`user` = :telu_entra_owner) ';
+    if ( ! isset( $where['binds'] ) || ! is_array( $where['binds'] ) ) {
+        $where['binds'] = array();
+    }
+    unset( $where['binds']['user'] );
+    $where['binds']['telu_entra_owner'] = defined( 'YOURLS_USER' ) ? (string) YOURLS_USER : '';
+
+    return $where;
+}
+
+function telu_entra_strict_owner_db_stats( $return, $where ) {
+    if ( telu_entra_current_user_is_administrator() ) {
+        return $return;
+    }
+
+    global $ydb;
+    if ( ! is_object( $ydb ) || ! defined( 'YOURLS_DB_TABLE_URL' ) ) {
+        return $return;
+    }
+
+    $where = telu_entra_strict_owner_list_where( is_array( $where ) ? $where : array() );
+    $sql = "SELECT COUNT(keyword) AS count, SUM(clicks) AS sum FROM `" . YOURLS_DB_TABLE_URL . "` WHERE 1=1 " . $where['sql'];
+    $totals = $ydb->fetchObject( $sql, $where['binds'] );
+
+    return array(
+        'total_links'  => isset( $totals->count ) ? (int) $totals->count : 0,
+        'total_clicks' => isset( $totals->sum ) ? (int) $totals->sum : 0,
+    );
+}
+
+function telu_entra_current_user_owns_keyword( $keyword ) {
+    if ( telu_entra_current_user_is_administrator() ) {
+        return true;
+    }
+    if ( ! function_exists( 'amp_keyword_owner' ) || ! defined( 'YOURLS_USER' ) ) {
+        return false;
+    }
+
+    $owner = amp_keyword_owner( (string) $keyword );
+    return is_string( $owner ) && hash_equals( strtolower( $owner ), strtolower( (string) YOURLS_USER ) );
+}
+
+function telu_entra_strict_owner_api_stats( $return, $shorturl ) {
+    $keyword = str_replace( YOURLS_SITE . '/', '', (string) $shorturl );
+    $keyword = function_exists( 'yourls_sanitize_string' ) ? yourls_sanitize_string( $keyword ) : $keyword;
+    if ( ! telu_entra_current_user_owns_keyword( $keyword ) ) {
+        return array(
+            'simple'    => 'URL is owned by another user',
+            'message'   => 'URL is owned by another user',
+            'errorCode' => 403,
+        );
+    }
+    return $return;
+}
+
+function telu_entra_strict_owner_info_access( $keyword ) {
+    if ( ! yourls_is_private() || telu_entra_current_user_owns_keyword( $keyword ) ) {
+        return;
+    }
+
+    yourls_redirect( yourls_admin_url( '?access=denied' ), 302 );
+    exit;
 }
 
 function telu_entra_email_list_setting( $name ) {

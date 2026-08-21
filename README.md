@@ -98,7 +98,9 @@ $amp_role_assignment = array(
 );
 ```
 
-Pengguna Contributor hanya mengelola shortlink miliknya. Plugin menolak aktivasi ketika AuthMgrPlus tidak terdeteksi untuk mencegah akses bersama yang tidak disengaja.
+Pengguna Contributor dan Editor hanya dapat melihat, menghitung statistik, serta mengelola shortlink miliknya sendiri. Hanya pengguna dengan role AuthMgrPlus `administrator` (termasuk admin lokal/default yang dimasukkan ke role tersebut) yang dapat melihat seluruh shortlink. Shortlink lama dengan kolom `Username` kosong hanya terlihat oleh Administrator. Pembatasan ini tidak memengaruhi redirect shortlink publik: pengunjung tetap dapat membuka shortlink tanpa login.
+
+Plugin menolak aktivasi ketika AuthMgrPlus tidak terdeteksi untuk mencegah akses bersama yang tidak disengaja.
 
 ## 5. Aktivasi dan pengujian
 

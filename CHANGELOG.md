@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0
+
+- Memperketat isolasi kepemilikan: Contributor dan Editor hanya melihat shortlink miliknya sendiri.
+- Menyembunyikan shortlink lama tanpa pemilik dari semua role selain Administrator.
+- Menyamakan pembatasan pada daftar admin, total statistik, API statistik, halaman info, edit, dan hapus.
+- Mempertahankan akses redirect shortlink publik tanpa login.
+
 ## 1.4.4
 
 - Mengarahkan Author URI ke repository GitHub resmi plugin.
