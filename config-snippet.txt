@@ -1,0 +1,8 @@
+/* Microsoft Entra SSO for YOURLS */
+define( 'TELU_ENTRA_CLIENT_SECRET', 'CLIENT-SECRET-VALUE' );
+define( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' );
+
+// Wajib false pada operasi normal. Gunakan true hanya sementara untuk recovery.
+define( 'TELU_ENTRA_ALLOW_LOCAL_RECOVERY', false );
+
+// Pengaturan non-rahasia lainnya diisi dari menu Microsoft SSO di dashboard YOURLS.
