@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.1.1
+
+- Mengautentikasi request pembuatan shortlink dari frontend `result.php` menggunakan cookie Entra yang telah diverifikasi.
+- Menetapkan `YOURLS_USER` sebelum link dibuat agar AuthMgrPlus menyimpan email pembuat sebagai owner.
+- Menambahkan guard urutan `insert_link` sebelum callback AuthMgrPlus tanpa menulis database secara langsung.
+- Menolak request pembuatan frontend tanpa sesi Microsoft yang valid; pembuatan API anonim tetap diblokir.
+
+## 2.1.0
+
+- Menampilkan Tools, Manage Plugins, dan pengaturan Microsoft SSO hanya kepada Administrator AuthMgrPlus.
+- Menambahkan pembatasan server-side untuk akses langsung ke halaman administratif sensitif.
+- Mempertahankan Admin interface dan Help untuk user biasa.
+
 ## 2.0.1
 
 - Memperbaiki login recovery lokal agar tetap dapat dipakai saat domain atau konfigurasi Entra belum lengkap.

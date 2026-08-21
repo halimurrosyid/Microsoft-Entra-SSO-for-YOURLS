@@ -84,6 +84,8 @@ Domain tidak lagi ditetapkan ke organisasi tertentu. Domain dapat dikunci melalu
 
 ## 5. AuthMgrPlus dan kepemilikan
 
+Pembuatan dari homepage yang mengirim form ke `result.php` diikat ke sesi Microsoft Entra yang telah diverifikasi. Plugin menetapkan email tersebut sebagai `YOURLS_USER` sebelum proses insert, sehingga AuthMgrPlus menyimpan owner yang benar dan link langsung muncul pada dashboard pembuatnya. Request `result.php` tanpa sesi valid ditolak.
+
 AuthMgrPlus wajib aktif sebelum tes atau aktivasi SSO. Role pengguna Microsoft:
 
 - Default: `Contributor`.

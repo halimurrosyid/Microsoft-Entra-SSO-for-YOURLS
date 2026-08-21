@@ -44,6 +44,14 @@ check( ! telu_entra_email_is_allowed( 'user@evilexample.edu' ), 'look-alike doma
 check( ! telu_entra_email_is_allowed( 'user@example.edu.example.com' ), 'suffix attack should fail' );
 check( ! telu_entra_email_is_allowed( 'not-an-email' ), 'invalid email should fail' );
 
+$_SERVER['REQUEST_URI'] = '/result.php';
+$_SERVER['REQUEST_METHOD'] = 'POST';
+$_REQUEST['url'] = 'https://example.com/long-link';
+check( telu_entra_is_public_creation_request(), 'root result.php POST with URL should be recognized as public creation' );
+$_SERVER['REQUEST_URI'] = '/public-keyword';
+check( ! telu_entra_is_public_creation_request(), 'shortlink paths must never be treated as public creation' );
+unset( $_REQUEST['url'], $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] );
+
 $amp_role_assignment = array( 'administrator' => array( 'admin' ) );
 telu_entra_assign_authmgr_role( 'member@student.example.edu' );
 telu_entra_assign_authmgr_role( 'sso-editor@unit.example.edu' );

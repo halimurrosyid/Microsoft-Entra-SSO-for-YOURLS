@@ -3,7 +3,7 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 2.0.1
+Version: 2.1.1
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '2.0.1' );
+define( 'TELU_ENTRA_SSO_VERSION', '2.1.1' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -39,8 +39,13 @@ yourls_add_action( 'auth_successful', 'telu_entra_harden_authmgr_roles', 1 );
 yourls_add_filter( 'admin_list_where', 'telu_entra_strict_owner_list_where', 99 );
 yourls_add_filter( 'get_db_stats', 'telu_entra_strict_owner_db_stats', 99 );
 yourls_add_filter( 'api_url_stats', 'telu_entra_strict_owner_api_stats', 99 );
+yourls_add_filter( 'admin_links', 'telu_entra_role_based_admin_links', 99 );
+yourls_add_filter( 'admin_sublinks', 'telu_entra_role_based_admin_sublinks', 99 );
 yourls_add_action( 'pre_yourls_infos', 'telu_entra_strict_owner_info_access', 1 );
 yourls_add_action( 'plugins_loaded', 'telu_entra_migrate_legacy_domain', 1 );
+yourls_add_action( 'plugins_loaded', 'telu_entra_authenticate_public_creation', 5 );
+yourls_add_action( 'auth_successful', 'telu_entra_restrict_administrator_pages', 20 );
+yourls_add_action( 'insert_link', 'telu_entra_restore_owner_before_authmgr', 1 );
 
 if ( function_exists( 'yourls_register_plugin_page' ) ) {
     yourls_register_plugin_page(
@@ -321,6 +326,64 @@ function telu_entra_protect_homepage( $request ) {
     if ( $valid !== true ) {
         telu_entra_error_page( 'Login Microsoft diperlukan untuk membuka halaman pembuatan shortlink.', 401 );
     }
+}
+
+/**
+ * Public frontend forms commonly POST to result.php without calling
+ * yourls_is_valid_user(). Restore the verified Entra identity before the
+ * frontend calls yourls_add_new_link(), so AuthMgrPlus can record its owner.
+ */
+function telu_entra_authenticate_public_creation() {
+    if ( ! telu_entra_is_enabled() || ! telu_entra_is_public_creation_request() ) {
+        return;
+    }
+
+    $identity = telu_entra_read_identity_cookie();
+    if ( ! is_array( $identity ) || empty( $identity['email'] ) ) {
+        telu_entra_error_page( 'Sesi Microsoft diperlukan untuk membuat shortlink.', 401 );
+    }
+
+    if ( ! telu_entra_email_is_allowed( $identity['email'] ) ) {
+        telu_entra_error_page( 'Identitas Microsoft tidak termasuk domain organisasi yang diizinkan.', 403 );
+    }
+
+    if ( function_exists( 'yourls_set_user' ) ) {
+        yourls_set_user( strtolower( trim( (string) $identity['email'] ) ) );
+    }
+    telu_entra_assign_authmgr_role( $identity['email'] );
+}
+
+function telu_entra_is_public_creation_request() {
+    if ( empty( $_SERVER['REQUEST_URI'] ) || empty( $_SERVER['REQUEST_METHOD'] ) ) {
+        return false;
+    }
+
+    $path = parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH );
+    $site_path = defined( 'YOURLS_SITE' ) ? parse_url( (string) YOURLS_SITE, PHP_URL_PATH ) : '/';
+    $expected = rtrim( '/' . trim( (string) $site_path, '/' ), '/' ) . '/result.php';
+    $method = strtoupper( (string) $_SERVER['REQUEST_METHOD'] );
+
+    return rtrim( '/' . trim( (string) $path, '/' ), '/' ) === rtrim( $expected, '/' )
+        && in_array( $method, array( 'POST', 'GET' ), true )
+        && isset( $_REQUEST['url'] )
+        && trim( (string) $_REQUEST['url'] ) !== '';
+}
+
+/**
+ * Defensive ordering guard: this runs before AuthMgrPlus' default-priority
+ * insert_link callback. It does not write to the database itself.
+ */
+function telu_entra_restore_owner_before_authmgr( $actions ) {
+    if ( ! defined( 'YOURLS_USER' ) && telu_entra_is_enabled() ) {
+        $identity = telu_entra_read_identity_cookie();
+        if ( is_array( $identity ) && ! empty( $identity['email'] ) && telu_entra_email_is_allowed( $identity['email'] ) ) {
+            if ( function_exists( 'yourls_set_user' ) ) {
+                yourls_set_user( strtolower( trim( (string) $identity['email'] ) ) );
+            }
+            telu_entra_assign_authmgr_role( $identity['email'] );
+        }
+    }
+    return $actions;
 }
 
 /**
@@ -827,6 +890,55 @@ function telu_entra_current_user_is_administrator() {
     return false;
 }
 
+/**
+ * Keep administrative navigation and sensitive diagnostic pages exclusive to
+ * the AuthMgrPlus Administrator role. The request guard also covers direct URLs.
+ */
+function telu_entra_role_based_admin_links( $links ) {
+    if ( telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
+        return $links;
+    }
+    foreach ( array( 'tools', 'plugins' ) as $key ) {
+        unset( $links[ $key ] );
+    }
+    return $links;
+}
+
+function telu_entra_role_based_admin_sublinks( $links ) {
+    if ( telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
+        return $links;
+    }
+    unset( $links['plugins'] );
+    foreach ( $links as $group => $items ) {
+        if ( ! is_array( $items ) ) {
+            continue;
+        }
+        foreach ( $items as $key => $item ) {
+            $serialized = strtolower( is_array( $item ) ? implode( ' ', array_map( 'strval', $item ) ) : (string) $item );
+            if ( strpos( strtolower( (string) $key ), 'telu_entra_sso' ) !== false || strpos( $serialized, 'microsoft sso' ) !== false ) {
+                unset( $links[ $group ][ $key ] );
+            }
+        }
+    }
+    return $links;
+}
+
+function telu_entra_restrict_administrator_pages() {
+    if ( telu_entra_current_user_is_administrator() || empty( $_SERVER['REQUEST_URI'] ) ) {
+        return;
+    }
+    $path = parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH );
+    $page = isset( $_GET['page'] ) ? (string) $_GET['page'] : '';
+    $restricted = preg_match( '#/admin/(?:tools|plugins)\.php$#i', (string) $path ) || $page === 'telu_entra_sso';
+    if ( ! $restricted ) {
+        return;
+    }
+    if ( function_exists( 'yourls_redirect' ) && function_exists( 'yourls_admin_url' ) ) {
+        yourls_redirect( yourls_admin_url( '?access=denied' ), 302 );
+    }
+    exit;
+}
+
 function telu_entra_strict_owner_list_where( $where ) {
     if ( telu_entra_current_user_is_administrator() || ! is_array( $where ) ) {
         return $where;
@@ -1208,6 +1320,13 @@ function telu_entra_local_login_microsoft_button() {
  * Settings and diagnostic page. Client Secret is never accepted or rendered.
  */
 function telu_entra_settings_page() {
+    if ( ! telu_entra_current_user_is_administrator() ) {
+        if ( function_exists( 'yourls_add_notice' ) ) {
+            yourls_add_notice( 'Access Denied' );
+        }
+        return;
+    }
+
     $notice = '';
     $notice_error = '';
 
