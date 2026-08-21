@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Microsoft Entra SSO for YOURLS
-Plugin URI: https://it.telkomuniversity.ac.id/
+Plugin URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 1.5.0
+Version: 2.0.0
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '1.5.0' );
+define( 'TELU_ENTRA_SSO_VERSION', '2.0.0' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -28,6 +28,7 @@ define( 'TELU_ENTRA_AUDIT_OPTION', 'telu_entra_sso_audit_v1' );
 define( 'TELU_ENTRA_ADMINS_OPTION', 'telu_entra_sso_admin_emails_v1' );
 define( 'TELU_ENTRA_EDITORS_OPTION', 'telu_entra_sso_editor_emails_v1' );
 define( 'TELU_ENTRA_HOMEPAGE_OPTION', 'telu_entra_sso_homepage_hook_v1' );
+define( 'TELU_ENTRA_DOMAIN_OPTION', 'telu_entra_sso_allowed_root_domain_v1' );
 
 yourls_add_filter( 'shunt_is_valid_user', 'telu_entra_authenticate', 8 );
 yourls_add_filter( 'logout_link', 'telu_entra_display_name_in_header', 20 );
@@ -53,7 +54,8 @@ if ( function_exists( 'yourls_register_plugin_page' ) ) {
  * Client Secret is deliberately never read from or stored in the database.
  */
 function telu_entra_config( $name, $default = null ) {
-    $key = 'TELU_ENTRA_' . $name;
+    $key = 'YOURLS_ENTRA_' . $name;
+    $legacy_key = 'TELU_ENTRA_' . $name;
 
     if ( defined( $key ) ) {
         return constant( $key );
@@ -64,6 +66,15 @@ function telu_entra_config( $name, $default = null ) {
         return $environment;
     }
 
+    // Backward compatibility with releases up to 1.5.0.
+    if ( defined( $legacy_key ) ) {
+        return constant( $legacy_key );
+    }
+    $legacy_environment = getenv( $legacy_key );
+    if ( $legacy_environment !== false && $legacy_environment !== '' ) {
+        return $legacy_environment;
+    }
+
     $database_options = array(
         'TENANT_ID' => TELU_ENTRA_TENANT_OPTION,
         'CLIENT_ID' => TELU_ENTRA_CLIENT_OPTION,
@@ -72,6 +83,7 @@ function telu_entra_config( $name, $default = null ) {
         'ALLOWED_APP_ROLES' => TELU_ENTRA_ROLES_OPTION,
         'ADMIN_EMAILS' => TELU_ENTRA_ADMINS_OPTION,
         'EDITOR_EMAILS' => TELU_ENTRA_EDITORS_OPTION,
+        'ALLOWED_ROOT_DOMAIN' => TELU_ENTRA_DOMAIN_OPTION,
     );
     if ( isset( $database_options[ $name ] ) ) {
         $stored = yourls_get_option( $database_options[ $name ] );
@@ -84,9 +96,12 @@ function telu_entra_config( $name, $default = null ) {
 }
 
 function telu_entra_config_is_locked( $name ) {
-    $key = 'TELU_ENTRA_' . $name;
+    $key = 'YOURLS_ENTRA_' . $name;
+    $legacy_key = 'TELU_ENTRA_' . $name;
     $environment = getenv( $key );
-    return defined( $key ) || ( $environment !== false && $environment !== '' );
+    $legacy_environment = getenv( $legacy_key );
+    return defined( $key ) || ( $environment !== false && $environment !== '' ) ||
+        defined( $legacy_key ) || ( $legacy_environment !== false && $legacy_environment !== '' );
 }
 
 function telu_entra_is_enabled() {
@@ -132,22 +147,22 @@ function telu_entra_configuration_errors() {
     $tenant = strtolower( trim( (string) telu_entra_config( 'TENANT_ID', '' ) ) );
     $client = trim( (string) telu_entra_config( 'CLIENT_ID', '' ) );
     $secret = trim( (string) telu_entra_config( 'CLIENT_SECRET', '' ) );
-    $root   = strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' ) ) );
+    $root   = strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) );
 
     if ( ! preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/', $tenant ) ) {
-        $errors[] = 'TELU_ENTRA_TENANT_ID harus berupa Tenant ID (GUID) Microsoft Entra.';
+        $errors[] = 'YOURLS_ENTRA_TENANT_ID harus berupa Tenant ID (GUID) Microsoft Entra.';
     }
 
     if ( ! preg_match( '/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/', $client ) ) {
-        $errors[] = 'TELU_ENTRA_CLIENT_ID belum diisi dengan benar.';
+        $errors[] = 'YOURLS_ENTRA_CLIENT_ID belum diisi dengan benar.';
     }
 
     if ( strlen( $secret ) < 16 ) {
-        $errors[] = 'TELU_ENTRA_CLIENT_SECRET belum diisi atau terlalu pendek.';
+        $errors[] = 'YOURLS_ENTRA_CLIENT_SECRET belum diisi atau terlalu pendek.';
     }
 
     if ( ! preg_match( '/^[a-z0-9.-]+\.[a-z]{2,}$/', $root ) ) {
-        $errors[] = 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN tidak valid.';
+        $errors[] = 'Domain email organisasi belum diisi atau tidak valid.';
     }
 
     if (
@@ -172,11 +187,11 @@ function telu_entra_configuration_errors() {
 
     $admins = telu_entra_email_list_setting( 'ADMIN_EMAILS' );
     if ( empty( $admins ) ) {
-        $errors[] = 'Minimal satu TELU_ENTRA_ADMIN_EMAILS wajib ditetapkan untuk administrasi dan recovery.';
+        $errors[] = 'Minimal satu email Administrator wajib ditetapkan untuk administrasi dan recovery.';
     } else {
         foreach ( $admins as $admin_email ) {
             if ( ! telu_entra_email_is_allowed( $admin_email ) ) {
-                $errors[] = 'Email administrator tidak valid atau berada di luar domain Telkom University: ' . $admin_email;
+                $errors[] = 'Email administrator tidak valid atau berada di luar domain organisasi: ' . $admin_email;
             }
         }
     }
@@ -333,7 +348,7 @@ function telu_entra_begin_login( $purpose = 'login', $return_to = null ) {
         'nonce'                 => $nonce,
         'code_challenge'        => $challenge,
         'code_challenge_method' => 'S256',
-        'domain_hint'           => (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' ),
+        'domain_hint'           => (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ),
     );
 
     $authorization_url = 'https://login.microsoftonline.com/' . rawurlencode( $tenant ) .
@@ -400,7 +415,7 @@ function telu_entra_handle_callback() {
     $email  = telu_entra_email_from_claims( $claims );
 
     if ( ! telu_entra_email_is_allowed( $email ) ) {
-        telu_entra_error_page( 'Email Microsoft ini tidak termasuk domain Telkom University yang diizinkan.', 403 );
+        telu_entra_error_page( 'Email Microsoft ini tidak termasuk domain organisasi yang diizinkan.', 403 );
     }
 
     if ( ! telu_entra_claims_are_allowed( $claims ) ) {
@@ -414,6 +429,7 @@ function telu_entra_handle_callback() {
             'time'    => time(),
             'tenant'  => strtolower( trim( (string) telu_entra_config( 'TENANT_ID', '' ) ) ),
             'client'  => strtolower( trim( (string) telu_entra_config( 'CLIENT_ID', '' ) ) ),
+            'domain'  => strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) ),
             'secret'  => telu_entra_secret_fingerprint(),
         ), JSON_UNESCAPED_SLASHES ) );
         telu_entra_audit( 'test_success', $email, 'Login Microsoft dan validasi token berhasil.' );
@@ -686,6 +702,10 @@ function telu_entra_display_name_in_header( $logout_link ) {
  * Allow the exact root domain and any true subdomain, never look-alike suffixes.
  */
 function telu_entra_email_is_allowed( $email ) {
+    return telu_entra_email_matches_domain( $email, telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) );
+}
+
+function telu_entra_email_matches_domain( $email, $allowed_root_domain ) {
     $email = strtolower( trim( (string) $email ) );
     if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
         return false;
@@ -693,7 +713,11 @@ function telu_entra_email_is_allowed( $email ) {
 
     $position = strrpos( $email, '@' );
     $domain   = substr( $email, $position + 1 );
-    $root     = strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' ), '.' ) );
+    $root     = strtolower( trim( (string) $allowed_root_domain, '.' ) );
+
+    if ( $root === '' || ! filter_var( $root, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
+        return false;
+    }
 
     return $domain === $root || telu_entra_string_ends_with( $domain, '.' . $root );
 }
@@ -1033,7 +1057,7 @@ function telu_entra_http_json( $url, $post_fields = null ) {
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_HTTPHEADER     => array( 'Accept: application/json' ),
-        CURLOPT_USERAGENT      => 'TelU-YOURLS-Entra-SSO/' . TELU_ENTRA_SSO_VERSION,
+        CURLOPT_USERAGENT      => 'YOURLS-Microsoft-Entra-SSO/' . TELU_ENTRA_SSO_VERSION,
     );
 
     if ( is_array( $post_fields ) ) {
@@ -1073,7 +1097,7 @@ function telu_entra_api_forbidden() {
     echo json_encode( array(
         'status'    => 'fail',
         'code'      => 'error:entra_required',
-        'message'   => 'Pembuatan shortlink wajib melalui admin dan login Microsoft Entra Telkom University.',
+        'message'   => 'Pembuatan shortlink wajib melalui antarmuka web dan login Microsoft Entra organisasi.',
         'errorCode' => '403',
     ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
     exit;
@@ -1181,6 +1205,7 @@ function telu_entra_settings_page() {
     if ( $is_post && isset( $_POST['telu_entra_save'] ) ) {
         $submitted_tenant = strtolower( trim( isset( $_POST['telu_entra_tenant_id'] ) ? (string) $_POST['telu_entra_tenant_id'] : '' ) );
         $submitted_client = strtolower( trim( isset( $_POST['telu_entra_client_id'] ) ? (string) $_POST['telu_entra_client_id'] : '' ) );
+        $submitted_domain = strtolower( trim( isset( $_POST['telu_entra_allowed_root_domain'] ) ? (string) $_POST['telu_entra_allowed_root_domain'] : '', " .\t\n\r\0\x0B" ) );
         $submitted_session = isset( $_POST['telu_entra_session_lifetime'] ) ? (int) $_POST['telu_entra_session_lifetime'] : 28800;
         $submitted_groups = implode( ',', telu_entra_normalize_csv( isset( $_POST['telu_entra_allowed_groups'] ) ? (string) $_POST['telu_entra_allowed_groups'] : '' ) );
         $submitted_roles = implode( ',', telu_entra_normalize_csv( isset( $_POST['telu_entra_allowed_roles'] ) ? (string) $_POST['telu_entra_allowed_roles'] : '' ) );
@@ -1188,7 +1213,7 @@ function telu_entra_settings_page() {
         $submitted_editors = implode( ',', array_map( 'strtolower', telu_entra_normalize_csv( isset( $_POST['telu_entra_editor_emails'] ) ? (string) $_POST['telu_entra_editor_emails'] : '' ) ) );
         $invalid_role_email = '';
         foreach ( array_merge( telu_entra_normalize_csv( $submitted_admins ), telu_entra_normalize_csv( $submitted_editors ) ) as $role_email ) {
-            if ( ! telu_entra_email_is_allowed( $role_email ) ) {
+            if ( ! telu_entra_email_matches_domain( $role_email, $submitted_domain ) ) {
                 $invalid_role_email = $role_email;
                 break;
             }
@@ -1197,18 +1222,23 @@ function telu_entra_settings_page() {
 
         if ( ! preg_match( $guid, $submitted_tenant ) || ! preg_match( $guid, $submitted_client ) ) {
             $notice_error = 'Tenant ID dan Client ID harus berupa GUID Microsoft yang valid.';
+        } elseif ( ! filter_var( $submitted_domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
+            $notice_error = 'Domain email organisasi harus berupa nama domain yang valid, misalnya example.org.';
         } elseif ( $submitted_session < 900 || $submitted_session > 86400 ) {
             $notice_error = 'Durasi sesi harus antara 900 dan 86400 detik.';
         } elseif ( $submitted_admins === '' ) {
-            $notice_error = 'Minimal satu email administrator Telkom University wajib diisi.';
+            $notice_error = 'Minimal satu email administrator organisasi wajib diisi.';
         } elseif ( $invalid_role_email !== '' ) {
-            $notice_error = 'Email role tidak valid atau di luar domain Telkom University: ' . $invalid_role_email;
+            $notice_error = 'Email role tidak valid atau di luar domain organisasi: ' . $invalid_role_email;
         } else {
             if ( ! telu_entra_config_is_locked( 'TENANT_ID' ) ) {
                 yourls_update_option( TELU_ENTRA_TENANT_OPTION, $submitted_tenant );
             }
             if ( ! telu_entra_config_is_locked( 'CLIENT_ID' ) ) {
                 yourls_update_option( TELU_ENTRA_CLIENT_OPTION, $submitted_client );
+            }
+            if ( ! telu_entra_config_is_locked( 'ALLOWED_ROOT_DOMAIN' ) ) {
+                yourls_update_option( TELU_ENTRA_DOMAIN_OPTION, $submitted_domain );
             }
             if ( ! telu_entra_config_is_locked( 'SESSION_LIFETIME' ) ) {
                 yourls_update_option( TELU_ENTRA_SESSION_OPTION, (string) $submitted_session );
@@ -1243,7 +1273,7 @@ function telu_entra_settings_page() {
 
     if ( $is_post && isset( $_POST['telu_entra_toggle'] ) ) {
         if ( telu_entra_config_is_locked( 'ENABLED' ) ) {
-            $notice_error = 'Status enable dikunci oleh TELU_ENTRA_ENABLED di config atau environment.';
+            $notice_error = 'Status enable dikunci oleh YOURLS_ENTRA_ENABLED di config atau environment.';
         } elseif ( telu_entra_is_enabled() ) {
             yourls_update_option( TELU_ENTRA_ENABLED_OPTION, '0' );
             telu_entra_clear_cookie( TELU_ENTRA_AUTH_COOKIE );
@@ -1257,10 +1287,12 @@ function telu_entra_settings_page() {
                 $test = is_string( $test_raw ) ? json_decode( $test_raw, true ) : null;
                 $current_tenant = strtolower( trim( (string) telu_entra_config( 'TENANT_ID', '' ) ) );
                 $current_client = strtolower( trim( (string) telu_entra_config( 'CLIENT_ID', '' ) ) );
+                $current_domain = strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) );
                 $test_matches = is_array( $test ) && ! empty( $test['success'] ) &&
-                    isset( $test['tenant'], $test['client'] ) &&
+                    isset( $test['tenant'], $test['client'], $test['domain'] ) &&
                     hash_equals( $current_tenant, (string) $test['tenant'] ) &&
                     hash_equals( $current_client, (string) $test['client'] ) &&
+                    hash_equals( $current_domain, (string) $test['domain'] ) &&
                     isset( $test['secret'] ) &&
                     hash_equals( telu_entra_secret_fingerprint(), (string) $test['secret'] );
 
@@ -1286,6 +1318,7 @@ function telu_entra_settings_page() {
                 TELU_ENTRA_ROLES_OPTION,
                 TELU_ENTRA_ADMINS_OPTION,
                 TELU_ENTRA_EDITORS_OPTION,
+                TELU_ENTRA_DOMAIN_OPTION,
                 TELU_ENTRA_TEST_OPTION,
                 TELU_ENTRA_JWKS_OPTION,
             ) as $option_name ) {
@@ -1300,7 +1333,7 @@ function telu_entra_settings_page() {
     $errors = telu_entra_configuration_errors();
     $tenant = trim( (string) telu_entra_config( 'TENANT_ID', '' ) );
     $client = trim( (string) telu_entra_config( 'CLIENT_ID', '' ) );
-    $root   = trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' ) );
+    $root   = trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) );
     $session_lifetime = telu_entra_session_lifetime();
     $allowed_groups = implode( ', ', telu_entra_list_setting( 'ALLOWED_GROUP_IDS' ) );
     $allowed_roles = implode( ', ', telu_entra_list_setting( 'ALLOWED_APP_ROLES' ) );
@@ -1339,6 +1372,7 @@ function telu_entra_settings_page() {
     echo '<form method="post"><table style="max-width:900px">';
     echo '<tr><th style="text-align:left;padding:8px;width:220px"><label for="telu_entra_tenant_id">Tenant ID</label></th><td style="padding:8px"><input type="text" id="telu_entra_tenant_id" name="telu_entra_tenant_id" value="' . telu_entra_escape( $tenant ) . '" style="width:420px" pattern="[A-Fa-f0-9-]{36}" required' . ( telu_entra_config_is_locked( 'TENANT_ID' ) ? ' readonly' : '' ) . '></td></tr>';
     echo '<tr><th style="text-align:left;padding:8px"><label for="telu_entra_client_id">Client ID</label></th><td style="padding:8px"><input type="text" id="telu_entra_client_id" name="telu_entra_client_id" value="' . telu_entra_escape( $client ) . '" style="width:420px" pattern="[A-Fa-f0-9-]{36}" required' . ( telu_entra_config_is_locked( 'CLIENT_ID' ) ? ' readonly' : '' ) . '></td></tr>';
+    echo '<tr><th style="text-align:left;padding:8px"><label for="telu_entra_allowed_root_domain">Domain email organisasi</label></th><td style="padding:8px"><input type="text" id="telu_entra_allowed_root_domain" name="telu_entra_allowed_root_domain" value="' . telu_entra_escape( $root ) . '" style="width:420px" placeholder="example.org" required' . ( telu_entra_config_is_locked( 'ALLOWED_ROOT_DOMAIN' ) ? ' readonly' : '' ) . '><br><small>Domain utama tanpa <code>@</code>; seluruh subdomainnya otomatis diizinkan.</small></td></tr>';
     echo '<tr><th style="text-align:left;padding:8px"><label for="telu_entra_session_lifetime">Durasi sesi</label></th><td style="padding:8px"><input type="number" id="telu_entra_session_lifetime" name="telu_entra_session_lifetime" value="' . telu_entra_escape( $session_lifetime ) . '" min="900" max="86400" required' . ( telu_entra_config_is_locked( 'SESSION_LIFETIME' ) ? ' readonly' : '' ) . '> detik</td></tr>';
     echo '<tr><th style="text-align:left;padding:8px"><label for="telu_entra_admin_emails">Email Administrator</label></th><td style="padding:8px"><textarea id="telu_entra_admin_emails" name="telu_entra_admin_emails" rows="2" style="width:420px" required' . ( telu_entra_config_is_locked( 'ADMIN_EMAILS' ) ? ' readonly' : '' ) . '>' . telu_entra_escape( $admin_emails ) . '</textarea><br><small>Wajib, pisahkan dengan koma. Minimal satu akun untuk mengelola SSO.</small></td></tr>';
     echo '<tr><th style="text-align:left;padding:8px"><label for="telu_entra_editor_emails">Email Editor</label></th><td style="padding:8px"><textarea id="telu_entra_editor_emails" name="telu_entra_editor_emails" rows="2" style="width:420px"' . ( telu_entra_config_is_locked( 'EDITOR_EMAILS' ) ? ' readonly' : '' ) . '>' . telu_entra_escape( $editor_emails ) . '</textarea><br><small>Opsional, pisahkan dengan koma.</small></td></tr>';
@@ -1360,9 +1394,10 @@ function telu_entra_settings_page() {
     telu_entra_status_row( 'Login lokal darurat', $local_recovery ? 'AKTIF: ' . $local_url : 'Nonaktif (aman)' );
     telu_entra_status_row( 'Pembuatan via API', $enabled ? 'Diblokir; wajib melalui login Microsoft' : 'Mengikuti konfigurasi bawaan YOURLS' );
     telu_entra_status_row( 'Hook homepage', $homepage_seen > 0 ? 'Terdeteksi pada ' . date( 'Y-m-d H:i:s', $homepage_seen ) : 'Belum terdeteksi — buka homepage sekali lalu muat ulang halaman ini' );
-    $last_test_current = is_array( $last_test ) && isset( $last_test['tenant'], $last_test['client'], $last_test['secret'] ) &&
+    $last_test_current = is_array( $last_test ) && isset( $last_test['tenant'], $last_test['client'], $last_test['domain'], $last_test['secret'] ) &&
         hash_equals( strtolower( $tenant ), (string) $last_test['tenant'] ) &&
         hash_equals( strtolower( $client ), (string) $last_test['client'] ) &&
+        hash_equals( strtolower( $root ), (string) $last_test['domain'] ) &&
         hash_equals( telu_entra_secret_fingerprint(), (string) $last_test['secret'] );
     if ( is_array( $last_test ) && ! empty( $last_test['success'] ) && $last_test_current ) {
         $tested_at = isset( $last_test['time'] ) ? date( 'Y-m-d H:i:s', (int) $last_test['time'] ) : '-';
@@ -1403,9 +1438,8 @@ function telu_entra_settings_page() {
 
     echo '<h3 style="margin-top:24px">Konfigurasi rahasia di user/config.php</h3>';
     echo '<pre style="padding:14px;background:#f5f5f5;overflow:auto">' . telu_entra_escape(
-        "define( 'TELU_ENTRA_CLIENT_SECRET', 'ISI-LANGSUNG-DI-SERVER' );\n" .
-        "define( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' );\n" .
-        "define( 'TELU_ENTRA_ALLOW_LOCAL_RECOVERY', false );"
+        "define( 'YOURLS_ENTRA_CLIENT_SECRET', 'ISI-LANGSUNG-DI-SERVER' );\n" .
+        "define( 'YOURLS_ENTRA_ALLOW_LOCAL_RECOVERY', false );"
     ) . '</pre>';
 }
 

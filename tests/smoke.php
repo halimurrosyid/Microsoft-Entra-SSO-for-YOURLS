@@ -2,16 +2,16 @@
 
 // Minimal YOURLS stubs so pure plugin helpers can be tested without an installation.
 define( 'YOURLS_ABSPATH', __DIR__ );
-define( 'YOURLS_SITE', 'https://s.telkomuniversity.ac.id' );
+define( 'YOURLS_SITE', 'https://go.example.edu' );
 define( 'YOURLS_COOKIEKEY', 'test-cookie-key-that-is-longer-than-thirty-two-characters' );
 define( 'YOURLS_PRIVATE', true );
-define( 'YOURLS_USER', 'member@student.telkomuniversity.ac.id' );
-define( 'TELU_ENTRA_TENANT_ID', '11111111-2222-3333-4444-555555555555' );
-define( 'TELU_ENTRA_CLIENT_ID', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' );
-define( 'TELU_ENTRA_CLIENT_SECRET', 'local-test-secret-value-only' );
-define( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' );
-define( 'TELU_ENTRA_ADMIN_EMAILS', array( 'sso-admin@telkomuniversity.ac.id' ) );
-define( 'TELU_ENTRA_EDITOR_EMAILS', array( 'sso-editor@unit.telkomuniversity.ac.id' ) );
+define( 'YOURLS_USER', 'member@student.example.edu' );
+define( 'YOURLS_ENTRA_TENANT_ID', '11111111-2222-3333-4444-555555555555' );
+define( 'YOURLS_ENTRA_CLIENT_ID', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' );
+define( 'YOURLS_ENTRA_CLIENT_SECRET', 'local-test-secret-value-only' );
+define( 'YOURLS_ENTRA_ALLOWED_ROOT_DOMAIN', 'example.edu' );
+define( 'YOURLS_ENTRA_ADMIN_EMAILS', array( 'sso-admin@example.edu' ) );
+define( 'YOURLS_ENTRA_EDITOR_EMAILS', array( 'sso-editor@unit.example.edu' ) );
 
 function yourls_add_filter() {}
 function yourls_add_action() {}
@@ -32,22 +32,22 @@ function check( $condition, $message ) {
     }
 }
 
-check( telu_entra_email_is_allowed( 'user@telkomuniversity.ac.id' ), 'root domain should pass' );
-check( telu_entra_email_is_allowed( 'user@student.telkomuniversity.ac.id' ), 'subdomain should pass' );
-check( telu_entra_email_is_allowed( 'user@deep.unit.telkomuniversity.ac.id' ), 'nested subdomain should pass' );
+check( telu_entra_email_is_allowed( 'user@example.edu' ), 'root domain should pass' );
+check( telu_entra_email_is_allowed( 'user@student.example.edu' ), 'subdomain should pass' );
+check( telu_entra_email_is_allowed( 'user@deep.unit.example.edu' ), 'nested subdomain should pass' );
 check( telu_entra_display_name_from_claims( array( 'name' => 'Budi Santoso' ), 'user@example.com' ) === 'Budi Santoso', 'display name claim should be used' );
 check( telu_entra_display_name_from_claims( array(), 'user@example.com' ) === 'user@example.com', 'missing display name should fall back to email' );
-check( ! telu_entra_email_is_allowed( 'user@eviltelkomuniversity.ac.id' ), 'look-alike domain should fail' );
-check( ! telu_entra_email_is_allowed( 'user@telkomuniversity.ac.id.example.com' ), 'suffix attack should fail' );
+check( ! telu_entra_email_is_allowed( 'user@evilexample.edu' ), 'look-alike domain should fail' );
+check( ! telu_entra_email_is_allowed( 'user@example.edu.example.com' ), 'suffix attack should fail' );
 check( ! telu_entra_email_is_allowed( 'not-an-email' ), 'invalid email should fail' );
 
 $amp_role_assignment = array( 'administrator' => array( 'admin' ) );
-telu_entra_assign_authmgr_role( 'member@student.telkomuniversity.ac.id' );
-telu_entra_assign_authmgr_role( 'sso-editor@unit.telkomuniversity.ac.id' );
-telu_entra_assign_authmgr_role( 'sso-admin@telkomuniversity.ac.id' );
-check( in_array( 'member@student.telkomuniversity.ac.id', $amp_role_assignment['contributor'], true ), 'default OIDC role should be contributor' );
-check( in_array( 'sso-editor@unit.telkomuniversity.ac.id', $amp_role_assignment['editor'], true ), 'editor allowlist should work' );
-check( in_array( 'sso-admin@telkomuniversity.ac.id', $amp_role_assignment['administrator'], true ), 'admin allowlist should work' );
+telu_entra_assign_authmgr_role( 'member@student.example.edu' );
+telu_entra_assign_authmgr_role( 'sso-editor@unit.example.edu' );
+telu_entra_assign_authmgr_role( 'sso-admin@example.edu' );
+check( in_array( 'member@student.example.edu', $amp_role_assignment['contributor'], true ), 'default OIDC role should be contributor' );
+check( in_array( 'sso-editor@unit.example.edu', $amp_role_assignment['editor'], true ), 'editor allowlist should work' );
+check( in_array( 'sso-admin@example.edu', $amp_role_assignment['administrator'], true ), 'admin allowlist should work' );
 check( ! telu_entra_current_user_is_administrator(), 'contributor must not be treated as administrator' );
 $strict_where = telu_entra_strict_owner_list_where( array(
     'sql'   => ' AND (`user` = :user OR `user` IS NULL) ',
@@ -92,7 +92,7 @@ openssl_sign( $message, $signature, $private, OPENSSL_ALGO_SHA256 );
 check( openssl_verify( $message, $signature, $pem, OPENSSL_ALGO_SHA256 ) === 1, 'JWK PEM signature verification' );
 
 // Signed cookie payload format must reject tampering.
-$payload = array( 'email' => 'user@telkomuniversity.ac.id', 'expires' => time() + 60 );
+$payload = array( 'email' => 'user@example.edu', 'expires' => time() + 60 );
 $json = json_encode( $payload, JSON_UNESCAPED_SLASHES );
 $encoded = telu_entra_base64url_encode( $json );
 $signature = telu_entra_base64url_encode( hash_hmac( 'sha256', $encoded, telu_entra_hmac_key(), true ) );

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0
+
+- Menghapus domain organisasi bawaan; administrator menentukan domain sendiri.
+- Menambahkan pengaturan domain organisasi melalui halaman plugin.
+- Mengganti konstanta publik menjadi awalan universal `YOURLS_ENTRA_`.
+- Menjaga kompatibilitas seluruh konstanta lama `TELU_ENTRA_` versi 1.x.
+- Menetralkan contoh, pesan, metadata, dan dokumentasi untuk organisasi mana pun.
+- Memperluas panduan Azure, instalasi, role, pengujian, upgrade, recovery, penghapusan, dan privasi.
+
 ## 1.5.0
 
 - Memperketat isolasi kepemilikan: Contributor dan Editor hanya melihat shortlink miliknya sendiri.

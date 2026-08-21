@@ -1,177 +1,181 @@
 # Microsoft Entra SSO for YOURLS
 
-Plugin Microsoft Entra ID SSO khusus YOURLS. Pembuatan dan pengelolaan shortlink melalui homepage `/` wajib login dengan akun Microsoft dalam tenant yang dikonfigurasi apabila emailnya memakai:
+Plugin SSO Microsoft Entra ID yang generik untuk YOURLS. Administrator menentukan sendiri tenant dan domain email organisasinya. Domain utama dan seluruh subdomain yang sah dapat digunakan, sedangkan domain tiruan otomatis ditolak.
 
-- `@telkomuniversity.ac.id`
-- subdomain apa pun, misalnya `@student.telkomuniversity.ac.id`
+Contoh jika domain organisasi diisi `example.edu`:
 
-Domain yang mirip seperti `telkomuniversity.ac.id.example.com` atau `eviltelkomuniversity.ac.id` otomatis ditolak.
+- `user@example.edu` dan `user@student.example.edu` diizinkan.
+- `user@evilexample.edu` dan `user@example.edu.example.com` ditolak.
 
-Shortlink yang sudah dibuat tetap dapat dibuka oleh siapa saja seperti biasa, tanpa login. Plugin melindungi homepage `/` dan halaman admin, tetapi tidak mengubah request keyword seperti `/abc123` maupun proses redirect shortlink publik.
+Homepage `/` dan halaman administrasi memerlukan login Microsoft. Shortlink yang telah dibuat, misalnya `/abc123`, tetap dapat dibuka publik tanpa login.
 
-## Fitur keamanan
+## Fitur utama
 
-- Authorization Code Flow dengan PKCE.
-- Validasi `state` dan `nonce`.
-- Verifikasi tanda tangan RS256 ID token menggunakan Microsoft JWKS.
-- Validasi ketat `issuer`, `tenant ID`, `audience`, waktu berlaku, dan domain email.
-- Cookie sesi bertanda tangan, `Secure`, `HttpOnly`, `SameSite=Lax`, dan prefix `__Host-`.
-- Header menampilkan nama lengkap dari claim Microsoft `name`; identitas dan kepemilikan tetap memakai email.
-- Client Secret hanya dibaca dari `user/config.php` atau environment server.
-- SSO nonaktif secara default sampai administrator menguji dan mengaktifkannya.
-- Tes login menjalankan alur Microsoft sebenarnya tanpa membuka SSO untuk publik.
-- Login lokal dinonaktifkan secara default dan hanya dapat diaktifkan sementara untuk pemulihan darurat.
-- Pembuatan shortlink melalui YOURLS API diblokir agar tidak melewati login Microsoft.
-- Tidak membutuhkan Composer atau library pihak ketiga.
+- Authorization Code Flow dengan PKCE serta validasi `state` dan `nonce`.
+- Verifikasi RS256 ID token melalui Microsoft JWKS.
+- Validasi tenant, audience, issuer, waktu token, domain email, serta Group/App Role opsional.
+- Tes koneksi sebelum SSO diaktifkan dan tombol enable/disable.
+- Nama lengkap claim Microsoft `name` ditampilkan sebagai `Hello Nama Lengkap`.
+- Pemisahan shortlink per pengguna melalui AuthMgrPlus.
+- Contributor dan Editor hanya melihat serta mengelola shortlink miliknya.
+- Administrator melihat seluruh shortlink, termasuk link lama tanpa pemilik.
+- Client Secret tidak disimpan di database atau ditampilkan kembali.
+- Tidak membutuhkan Composer.
 
-## Kompatibilitas
+## Persyaratan
 
-- YOURLS 1.10.x
-- PHP 8.1 atau lebih baru
-- PHP cURL dan OpenSSL
-- HTTPS wajib
-- [AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus) 2.3.1 wajib untuk pemisahan link per pengguna
+- YOURLS 1.10.x dalam mode private.
+- PHP 8.1+ dengan cURL dan OpenSSL.
+- HTTPS.
+- Plugin wajib [AuthMgrPlus 2.3.1](https://github.com/joshp23/YOURLS-AuthMgrPlus).
 
 ## 1. Microsoft Entra App Registration
 
 1. Masuk ke Microsoft Entra Admin Center.
-2. Buka **App registrations** lalu pilih **New registration**.
-3. Gunakan tipe akun **Accounts in this organizational directory only**.
+2. Buka **App registrations** → **New registration**.
+3. Pilih **Accounts in this organizational directory only**.
 4. Tambahkan platform **Web**.
-5. Isi Redirect URI berikut secara persis:
-
-   `https://s.telkomuniversity.ac.id/admin/`
-
-6. Buat Client Secret pada **Certificates & secrets**.
-7. Salin **Value** Client Secret, bukan Secret ID.
+5. Masukkan URL YOURLS dengan `/admin/` sebagai Redirect URI, misalnya `https://go.example.edu/admin/`.
+6. Pada **Certificates & secrets**, buat Client Secret.
+7. Salin kolom **Value**, bukan Secret ID. Nilai hanya muncul sekali.
 8. Catat **Directory (tenant) ID** dan **Application (client) ID**.
 
-Plugin hanya meminta scope OIDC `openid`, `profile`, dan `email`. Tidak memerlukan izin membaca email, file, kontak, maupun kalender.
+Plugin hanya meminta scope OIDC `openid`, `profile`, dan `email`. Plugin tidak meminta akses file, kontak, atau kalender.
 
-## 2. Instalasi plugin
+## 2. Instalasi
 
-1. Ekstrak folder `yourls-microsoft-entra-sso` ke:
+1. Unduh ZIP terbaru dari folder [dist](https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS/tree/main/dist).
+2. Ekstrak folder `yourls-microsoft-entra-sso` ke `YOURLS/user/plugins/`.
+3. Pasang dan aktifkan [AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus).
+4. Tambahkan Client Secret ke `user/config.php`.
+5. Aktifkan **Microsoft Entra SSO for YOURLS** dari **Manage Plugins**.
 
-   `YOURLS/user/plugins/yourls-microsoft-entra-sso/`
+## 3. Konfigurasi rahasia
 
-2. Isi Client Secret di `user/config.php` seperti langkah berikut, lalu aktifkan plugin.
-
-## 3. Konfigurasi user/config.php
-
-Pastikan konfigurasi YOURLS menggunakan mode private:
+Pastikan YOURLS private dan gunakan cookie key acak yang kuat:
 
 ```php
 define( 'YOURLS_PRIVATE', true );
+define( 'YOURLS_COOKIEKEY', 'NILAI-ACAK-MINIMAL-32-KARAKTER' );
+
+define( 'YOURLS_ENTRA_CLIENT_SECRET', 'CLIENT-SECRET-VALUE' );
+
+// Tetap false. Ubah sementara hanya saat recovery darurat.
+define( 'YOURLS_ENTRA_ALLOW_LOCAL_RECOVERY', false );
 ```
 
-Ganti `YOURLS_COOKIEKEY` bawaan dengan nilai acak minimal 32 karakter. Client Secret adalah satu-satunya kredensial Entra yang wajib ditambahkan ke file ini:
+Client Secret juga dapat disimpan sebagai environment variable `YOURLS_ENTRA_CLIENT_SECRET`. Tenant ID, Client ID, domain organisasi, Administrator/Editor, dan pengaturan non-rahasia lainnya diisi dari halaman plugin.
 
-```php
-define( 'TELU_ENTRA_CLIENT_SECRET', 'CLIENT-SECRET-VALUE' );
-define( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN', 'telkomuniversity.ac.id' );
+Konstanta lama berawalan `TELU_ENTRA_` dari versi 1.x tetap dibaca agar upgrade tidak merusak instalasi. Instalasi baru sebaiknya memakai `YOURLS_ENTRA_`.
 
-// Pertahankan false. Aktifkan hanya sementara saat pemulihan darurat.
-define( 'TELU_ENTRA_ALLOW_LOCAL_RECOVERY', false );
-```
+## 4. Pengaturan melalui website
 
-Client Secret juga dapat disimpan sebagai environment variable `TELU_ENTRA_CLIENT_SECRET` agar tidak ditulis di file.
+Masuk menggunakan admin lokal YOURLS, lalu buka **Manage Plugins → Microsoft SSO** dan isi:
 
-Tenant ID, Client ID, email Administrator/Editor, durasi sesi, serta pembatasan Group/App Role dimasukkan melalui menu plugin.
+- **Tenant ID**: Directory (tenant) ID dari Microsoft Entra.
+- **Client ID**: Application (client) ID.
+- **Domain email organisasi**: domain utama tanpa `@`, protokol, atau path; contoh `example.edu`. Seluruh subdomain otomatis diterima.
+- **Email Administrator**: minimal satu alamat dalam domain yang diizinkan.
+- **Email Editor**: opsional, pisahkan dengan koma.
+- **Durasi sesi**: 900–86400 detik.
+- **Allowed Group IDs/App Roles**: opsional.
 
-## 4. AuthMgrPlus
+Domain tidak lagi ditetapkan ke organisasi tertentu. Domain dapat dikunci melalui `YOURLS_ENTRA_ALLOWED_ROOT_DOMAIN`, tetapi untuk penggunaan biasa cukup diisi melalui website.
 
-Unduh dan pasang plugin wajib dari repository resmi: [joshp23/YOURLS-AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus).
+## 5. AuthMgrPlus dan kepemilikan
 
-AuthMgrPlus wajib aktif sebelum tes dan aktivasi SSO. Plugin otomatis menambahkan pengguna Microsoft ke role AuthMgrPlus pada setiap request:
+AuthMgrPlus wajib aktif sebelum tes atau aktivasi SSO. Role pengguna Microsoft:
 
-- Default: `Contributor`
-- Email dalam `TELU_ENTRA_EDITOR_EMAILS`: `Editor`
-- Email dalam `TELU_ENTRA_ADMIN_EMAILS`: `Administrator`
+- Default: `Contributor`.
+- Email pada daftar Editor: `Editor`.
+- Email pada daftar Administrator: `Administrator`.
 
-Akun lokal yang sudah ada tetap ditentukan melalui `$amp_role_assignment` seperti biasa:
+Akun lokal YOURLS tetap dapat ditentukan di `user/config.php`:
 
 ```php
 $amp_role_assignment = array(
     'administrator' => array( 'admin' ),
-    'editor'        => array( 'celoe' ),
-    'contributor'   => array( 'celoezoom' ),
+    'editor'        => array( 'editor-local' ),
+    'contributor'   => array( 'user-local' ),
 );
 ```
 
-Pengguna Contributor dan Editor hanya dapat melihat, menghitung statistik, serta mengelola shortlink miliknya sendiri. Hanya pengguna dengan role AuthMgrPlus `administrator` (termasuk admin lokal/default yang dimasukkan ke role tersebut) yang dapat melihat seluruh shortlink. Shortlink lama dengan kolom `Username` kosong hanya terlihat oleh Administrator. Pembatasan ini tidak memengaruhi redirect shortlink publik: pengunjung tetap dapat membuka shortlink tanpa login.
+Aturan akses:
 
-Plugin menolak aktivasi ketika AuthMgrPlus tidak terdeteksi untuk mencegah akses bersama yang tidak disengaja.
+- Contributor dan Editor hanya melihat total, daftar, statistik, edit, serta hapus shortlink miliknya.
+- Administrator dapat melihat dan mengelola seluruh shortlink.
+- Shortlink lama dengan kolom `Username` kosong hanya terlihat Administrator.
+- Kepemilikan link baru disimpan menggunakan email Microsoft pengguna.
+- Menonaktifkan atau menghapus plugin tidak menghapus shortlink atau database YOURLS.
+- Redirect shortlink publik tetap berjalan tanpa login selama YOURLS aktif.
 
-## 5. Aktivasi dan pengujian
+## 6. Tes lalu aktifkan
 
-1. Aktifkan **Microsoft Entra SSO for YOURLS** pada Manage Plugins.
-2. Login menggunakan administrator lokal YOURLS; SSO masih nonaktif secara default.
-3. Buka menu **Microsoft SSO**.
-4. Masukkan **Directory (tenant) ID**, **Application (client) ID**, dan minimal satu email Administrator, lalu klik **Simpan Pengaturan**.
-5. Pastikan status Client Secret menunjukkan **Terpasang (disembunyikan)** dan konfigurasi dinyatakan siap.
-6. Klik **Tes Login Microsoft**. Selesaikan login menggunakan akun Telkom University.
-7. Pastikan status **Tes login terakhir** menunjukkan berhasil beserta email yang diuji.
-8. Klik **Aktifkan SSO** hanya setelah tes berhasil.
-9. Keluar dari sesi lokal dan uji menggunakan jendela Incognito/Private.
-10. Buka `https://s.telkomuniversity.ac.id/`; login Microsoft akan dimulai sebelum homepage ditampilkan.
-11. Buat sebuah shortlink, lalu buka URL pendeknya dari browser Incognito. Redirect harus berjalan tanpa meminta login.
+1. Simpan semua pengaturan.
+2. Pastikan Client Secret berstatus **Terpasang (disembunyikan)**.
+3. Klik **Tes Login Microsoft** ketika SSO masih nonaktif.
+4. Login dengan akun dari tenant dan domain yang dikonfigurasi.
+5. Pastikan **Tes login terakhir** berhasil.
+6. Klik **Aktifkan SSO**.
+7. Logout dan uji melalui Incognito/Private.
+8. Buka homepage; pengguna harus diarahkan ke Microsoft.
+9. Buat shortlink dan pastikan hanya pembuat serta Administrator yang melihatnya.
+10. Buka shortlink tanpa sesi; redirect harus tetap berjalan.
 
-## Tes dan enable/disable
+Tes memakai alur Microsoft sebenarnya. Token tidak disimpan. Hasil tes terikat pada Tenant ID, Client ID, dan fingerprint satu arah Client Secret; perubahan konfigurasi mengharuskan tes ulang.
 
-- **Tes Login Microsoft** menjalankan Authorization Code Flow lengkap, termasuk pertukaran code menggunakan Client Secret dan validasi token/domain.
-- Tes dapat dijalankan ketika SSO masih nonaktif, sehingga pengunjung belum diarahkan ke Microsoft.
-- Hasil tes hanya menyimpan status sukses, email yang diuji, dan waktu tes. Token tidak disimpan.
-- Hasil tes terikat pada fingerprint satu arah Client Secret. Jika secret berubah, tes wajib diulang.
-- **Aktifkan SSO** mulai melindungi homepage dan admin serta memblokir pembuatan link melalui API.
-- **Nonaktifkan SSO** mengembalikan autentikasi ke perilaku bawaan YOURLS tanpa menghapus konfigurasi atau shortlink.
-- **Reset Konfigurasi** tersedia setelah SSO dinonaktifkan; Client Secret di `user/config.php` tidak ikut dihapus.
-- Audit dibatasi ke 100 event dan tidak mencatat token, secret, IP, atau user-agent.
+## Enable, disable, reset, dan penghapusan
+
+- **Aktifkan SSO** melindungi homepage/admin dan memblokir pembuatan link lewat API.
+- **Nonaktifkan SSO** mengembalikan autentikasi bawaan YOURLS tanpa menghapus konfigurasi atau shortlink.
+- **Reset Konfigurasi** menghapus pengaturan non-rahasia setelah SSO dinonaktifkan; Client Secret tidak diubah.
+- Menghapus folder plugin tidak menghapus shortlink, tetapi login Microsoft dan pemisahan kepemilikan tidak lagi diterapkan.
+- Menonaktifkan AuthMgrPlus ketika SSO digunakan tidak didukung; plugin menampilkan kesalahan konfigurasi.
 
 ## Pembatasan Entra opsional
 
-- **Allowed Group IDs** membatasi login ke Object ID grup Entra tertentu dan membutuhkan `groups` claim di ID token.
-- **Allowed App Roles** membatasi login ke App Role tertentu melalui `roles` claim.
-- Jika Group IDs dan App Roles sama-sama diisi, akun wajib memenuhi kedua kategori.
-- Kosongkan keduanya jika validasi tenant dan domain email sudah mencukupi.
+- **Allowed Group IDs** membutuhkan claim `groups`.
+- **Allowed App Roles** membutuhkan claim `roles`.
+- Jika keduanya diisi, akun harus memenuhi kedua kategori.
+- Kosongkan keduanya jika validasi tenant dan domain sudah cukup.
 
-## Kebijakan akses
+## Recovery admin lokal
 
-- Homepage `/` dan `/admin/`: wajib login Microsoft Entra Telkom University.
-- Akun harus berasal dari Tenant ID yang dikonfigurasi.
-- Email harus tepat pada `telkomuniversity.ac.id` atau subdomainnya.
-- Endpoint API `action=shorturl`: ditolak, karena tidak mempunyai sesi login Microsoft interaktif.
-- Request keyword shortlink seperti `/abc123` dan redirect ke URL tujuan: tetap bebas diakses tanpa login.
-- Instalasi harus menggunakan `define( 'YOURLS_PRIVATE', true );` agar antarmuka pembuatan link tidak terbuka untuk publik.
-
-## Akses admin lokal darurat
-
-Login lokal tidak tersedia secara default. Jika Microsoft SSO bermasalah, ubah sementara konfigurasi berikut menjadi `true`:
+Jika Microsoft SSO bermasalah, ubah sementara:
 
 ```php
-define( 'TELU_ENTRA_ALLOW_LOCAL_RECOVERY', true );
+define( 'YOURLS_ENTRA_ALLOW_LOCAL_RECOVERY', true );
 ```
 
-Kemudian gunakan:
+Lalu buka `https://go.example.edu/admin/?telu_local_login=1`, login dengan admin lokal, dan segera kembalikan nilainya menjadi `false`. Parameter URL lama dipertahankan untuk kompatibilitas versi 1.x.
 
-`https://s.telkomuniversity.ac.id/admin/?telu_local_login=1`
-
-Login menggunakan akun lokal YOURLS, misalnya `admin`.
-
-Segera kembalikan `TELU_ENTRA_ALLOW_LOCAL_RECOVERY` menjadi `false` setelah perbaikan selesai.
-
-Jika plugin menyebabkan kendala sebelum halaman login tampil, ubah nama `plugin.php` menjadi `plugin-disabled.php` melalui aaPanel. Setelah akses pulih, periksa konfigurasi dan kembalikan namanya.
+Jika plugin gagal sebelum login muncul, ubah sementara nama `plugin.php` melalui file manager server, perbaiki konfigurasi, lalu kembalikan namanya.
 
 ## Logout Microsoft opsional
 
-Secara default, logout YOURLS hanya menghapus sesi plugin. Untuk ikut mengakhiri sesi Microsoft:
-
 ```php
-define( 'TELU_ENTRA_LOGOUT_MICROSOFT', true );
-define( 'TELU_ENTRA_POST_LOGOUT_REDIRECT_URI', 'https://s.telkomuniversity.ac.id/' );
+define( 'YOURLS_ENTRA_LOGOUT_MICROSOFT', true );
+define( 'YOURLS_ENTRA_POST_LOGOUT_REDIRECT_URI', 'https://go.example.edu/' );
 ```
 
-Pastikan URI setelah logout juga diizinkan dalam App Registration.
+Daftarkan URI tersebut pada App Registration bila digunakan.
 
-## Catatan privasi
+## Upgrade dari versi 1.x
 
-Plugin menyimpan Tenant ID, Client ID, role allowlist, batas Group/App Role, status enable, hasil tes, dan audit terbatas sebagai pengaturan non-rahasia di database. Cookie sesi menyimpan email institusi, `sub`, Tenant ID, dan waktu sesi. Token Microsoft dan Client Secret tidak pernah disimpan ke database.
+1. Backup `user/config.php` dan database YOURLS.
+2. Ganti folder plugin; jangan menghapus AuthMgrPlus.
+3. Konstanta `TELU_ENTRA_*` lama tetap berfungsi.
+4. Buka **Microsoft SSO**, isi domain organisasi bila sebelumnya tidak ditulis eksplisit, lalu simpan.
+5. Jalankan tes login kembali sebelum mengaktifkan SSO.
+6. Konstanta lama dapat diganti bertahap ke `YOURLS_ENTRA_*`.
+
+## Privasi
+
+Database menyimpan konfigurasi non-rahasia, status enable, hasil tes, dan maksimal 100 event audit. Cookie sesi bertanda tangan menyimpan email, nama tampilan, subject, tenant, dan waktu sesi. Token Microsoft dan Client Secret tidak disimpan di database. Audit tidak mencatat token, secret, IP, atau user-agent.
+
+## Dukungan dan lisensi
+
+- Repository: [Microsoft-Entra-SSO-for-YOURLS](https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS)
+- Dependensi wajib: [YOURLS-AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus)
+- Author: Konten Telu
+- Lisensi: GPL-3.0-or-later
