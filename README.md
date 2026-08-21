@@ -147,7 +147,7 @@ Jika Microsoft SSO bermasalah, ubah sementara:
 define( 'YOURLS_ENTRA_ALLOW_LOCAL_RECOVERY', true );
 ```
 
-Lalu buka `https://go.example.edu/admin/?telu_local_login=1`, login dengan admin lokal, dan segera kembalikan nilainya menjadi `false`. Parameter URL lama dipertahankan untuk kompatibilitas versi 1.x.
+Lalu buka `https://go.example.edu/admin/?telu_local_login=1`, login dengan username/password admin lokal YOURLS, dan segera kembalikan nilainya menjadi `false`. Parameter URL **bukan bypass yang aktif sendiri**: recovery hanya dibuka jika konstanta di atas bernilai `true`. Jalur ini tetap bekerja ketika domain, Client ID, atau konfigurasi Entra sedang tidak lengkap.
 
 Jika plugin gagal sebelum login muncul, ubah sementara nama `plugin.php` melalui file manager server, perbaiki konfigurasi, lalu kembalikan namanya.
 
@@ -165,9 +165,10 @@ Daftarkan URI tersebut pada App Registration bila digunakan.
 1. Backup `user/config.php` dan database YOURLS.
 2. Ganti folder plugin; jangan menghapus AuthMgrPlus.
 3. Konstanta `TELU_ENTRA_*` lama tetap berfungsi.
-4. Buka **Microsoft SSO**, isi domain organisasi bila sebelumnya tidak ditulis eksplisit, lalu simpan.
-5. Jalankan tes login kembali sebelum mengaktifkan SSO.
-6. Konstanta lama dapat diganti bertahap ke `YOURLS_ENTRA_*`.
+4. Versi 2.0.1+ otomatis menyalin `TELU_ENTRA_ALLOWED_ROOT_DOMAIN` lama ke database satu kali. Jalankan versi baru setidaknya sekali sebelum menghapus konstanta lama.
+5. Aktifkan recovery lokal sementara, buka **Microsoft SSO**, pastikan domain organisasi tampil, lalu simpan.
+6. Jalankan tes login kembali sebelum mengaktifkan SSO.
+7. Konstanta lama dapat diganti bertahap ke `YOURLS_ENTRA_*`.
 
 ## Privasi
 

@@ -9,7 +9,7 @@ define( 'YOURLS_USER', 'member@student.example.edu' );
 define( 'YOURLS_ENTRA_TENANT_ID', '11111111-2222-3333-4444-555555555555' );
 define( 'YOURLS_ENTRA_CLIENT_ID', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' );
 define( 'YOURLS_ENTRA_CLIENT_SECRET', 'local-test-secret-value-only' );
-define( 'YOURLS_ENTRA_ALLOWED_ROOT_DOMAIN', 'example.edu' );
+define( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN', 'example.edu' );
 define( 'YOURLS_ENTRA_ADMIN_EMAILS', array( 'sso-admin@example.edu' ) );
 define( 'YOURLS_ENTRA_EDITOR_EMAILS', array( 'sso-editor@unit.example.edu' ) );
 
@@ -31,6 +31,9 @@ function check( $condition, $message ) {
         exit( 1 );
     }
 }
+
+telu_entra_migrate_legacy_domain();
+check( $GLOBALS['test_options'][ TELU_ENTRA_DOMAIN_OPTION ] === 'example.edu', 'legacy domain should migrate to the database' );
 
 check( telu_entra_email_is_allowed( 'user@example.edu' ), 'root domain should pass' );
 check( telu_entra_email_is_allowed( 'user@student.example.edu' ), 'subdomain should pass' );

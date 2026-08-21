@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+- Memperbaiki login recovery lokal agar tetap dapat dipakai saat domain atau konfigurasi Entra belum lengkap.
+- Memigrasikan domain dari konstanta lama `TELU_ENTRA_ALLOWED_ROOT_DOMAIN` ke pengaturan database satu kali saat upgrade.
+- Memperjelas bahwa parameter recovery hanya aktif jika `YOURLS_ENTRA_ALLOW_LOCAL_RECOVERY` bernilai `true`.
+
 ## 2.0.0
 
 - Menghapus domain organisasi bawaan; administrator menentukan domain sendiri.

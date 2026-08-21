@@ -3,7 +3,7 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 2.0.0
+Version: 2.0.1
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '2.0.0' );
+define( 'TELU_ENTRA_SSO_VERSION', '2.0.1' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -40,6 +40,7 @@ yourls_add_filter( 'admin_list_where', 'telu_entra_strict_owner_list_where', 99 
 yourls_add_filter( 'get_db_stats', 'telu_entra_strict_owner_db_stats', 99 );
 yourls_add_filter( 'api_url_stats', 'telu_entra_strict_owner_api_stats', 99 );
 yourls_add_action( 'pre_yourls_infos', 'telu_entra_strict_owner_info_access', 1 );
+yourls_add_action( 'plugins_loaded', 'telu_entra_migrate_legacy_domain', 1 );
 
 if ( function_exists( 'yourls_register_plugin_page' ) ) {
     yourls_register_plugin_page(
@@ -102,6 +103,21 @@ function telu_entra_config_is_locked( $name ) {
     $legacy_environment = getenv( $legacy_key );
     return defined( $key ) || ( $environment !== false && $environment !== '' ) ||
         defined( $legacy_key ) || ( $legacy_environment !== false && $legacy_environment !== '' );
+}
+
+/**
+ * Persist the old 1.x domain once so removing the legacy constant after an
+ * upgrade does not unexpectedly lock out the organization.
+ */
+function telu_entra_migrate_legacy_domain() {
+    if ( defined( 'YOURLS_ENTRA_ALLOWED_ROOT_DOMAIN' ) || ! defined( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN' ) ) {
+        return;
+    }
+    $stored = yourls_get_option( TELU_ENTRA_DOMAIN_OPTION );
+    $legacy = strtolower( trim( (string) constant( 'TELU_ENTRA_ALLOWED_ROOT_DOMAIN' ), " .\t\n\r\0\x0B" ) );
+    if ( ( ! is_string( $stored ) || $stored === '' ) && filter_var( $legacy, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
+        yourls_update_option( TELU_ENTRA_DOMAIN_OPTION, $legacy );
+    }
 }
 
 function telu_entra_is_enabled() {
@@ -217,6 +233,8 @@ function telu_entra_authenticate( $pre ) {
         return $pre;
     }
 
+    telu_entra_migrate_legacy_domain();
+
     // Test callbacks must work while enforcement is disabled.
     if ( ( isset( $_GET['code'] ) || isset( $_GET['error'] ) ) && ! empty( $_COOKIE[ TELU_ENTRA_FLOW_COOKIE ] ) ) {
         telu_entra_handle_callback();
@@ -237,11 +255,6 @@ function telu_entra_authenticate( $pre ) {
         return $pre;
     }
 
-    $configuration_errors = telu_entra_configuration_errors();
-    if ( ! empty( $configuration_errors ) ) {
-        telu_entra_error_page( implode( ' ', $configuration_errors ), 503, false );
-    }
-
     // Always let YOURLS process its signed logout request.
     if ( isset( $_GET['action'] ) && $_GET['action'] === 'logout' ) {
         return $pre;
@@ -260,6 +273,13 @@ function telu_entra_authenticate( $pre ) {
     // Only preserve local administrator sessions while emergency recovery is enabled.
     if ( $local_recovery && isset( $_COOKIE[ yourls_cookie_name() ] ) && yourls_check_auth_cookie() === true ) {
         return $pre;
+    }
+
+    // Check Entra configuration only after the deliberately enabled recovery
+    // path, otherwise a missing domain/secret could also lock out local admins.
+    $configuration_errors = telu_entra_configuration_errors();
+    if ( ! empty( $configuration_errors ) ) {
+        telu_entra_error_page( implode( ' ', $configuration_errors ), 503, false );
     }
 
     // Microsoft sends either a code or an OAuth error back to the registered URI.
