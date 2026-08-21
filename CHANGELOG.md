@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.4
+
+- Mengarahkan Author URI ke repository GitHub resmi plugin.
+
 ## 1.4.3
 
 - Menghapus pengaturan dan pengingat tanggal kedaluwarsa Client Secret agar halaman konfigurasi lebih sederhana.

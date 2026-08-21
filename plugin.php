@@ -3,9 +3,9 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://it.telkomuniversity.ac.id/
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 1.4.3
+Version: 1.4.4
 Author: Konten Telu
-Author URI: https://it.telkomuniversity.ac.id/
+Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
 */
 
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '1.4.3' );
+define( 'TELU_ENTRA_SSO_VERSION', '1.4.4' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
