@@ -3,7 +3,7 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 2.1.1
+Version: 2.1.2
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '2.1.1' );
+define( 'TELU_ENTRA_SSO_VERSION', '2.1.2' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -46,6 +46,7 @@ yourls_add_action( 'plugins_loaded', 'telu_entra_migrate_legacy_domain', 1 );
 yourls_add_action( 'plugins_loaded', 'telu_entra_authenticate_public_creation', 5 );
 yourls_add_action( 'auth_successful', 'telu_entra_restrict_administrator_pages', 20 );
 yourls_add_action( 'insert_link', 'telu_entra_restore_owner_before_authmgr', 1 );
+yourls_add_action( 'insert_link', 'telu_entra_verify_public_creation_owner', 99 );
 
 if ( function_exists( 'yourls_register_plugin_page' ) ) {
     yourls_register_plugin_page(
@@ -347,10 +348,13 @@ function telu_entra_authenticate_public_creation() {
         telu_entra_error_page( 'Identitas Microsoft tidak termasuk domain organisasi yang diizinkan.', 403 );
     }
 
-    if ( function_exists( 'yourls_set_user' ) ) {
-        yourls_set_user( strtolower( trim( (string) $identity['email'] ) ) );
+    $email = strtolower( trim( (string) $identity['email'] ) );
+    $GLOBALS['telu_entra_public_creation_email'] = $email;
+
+    if ( function_exists( 'yourls_set_user' ) && ! defined( 'YOURLS_USER' ) ) {
+        yourls_set_user( $email );
     }
-    telu_entra_assign_authmgr_role( $identity['email'] );
+    telu_entra_assign_authmgr_role( $email );
 }
 
 function telu_entra_is_public_creation_request() {
@@ -374,7 +378,13 @@ function telu_entra_is_public_creation_request() {
  * insert_link callback. It does not write to the database itself.
  */
 function telu_entra_restore_owner_before_authmgr( $actions ) {
-    if ( ! defined( 'YOURLS_USER' ) && telu_entra_is_enabled() ) {
+    $email = isset( $GLOBALS['telu_entra_public_creation_email'] )
+        ? strtolower( trim( (string) $GLOBALS['telu_entra_public_creation_email'] ) )
+        : '';
+
+    if ( $email !== '' && ! defined( 'YOURLS_USER' ) && function_exists( 'yourls_set_user' ) ) {
+        yourls_set_user( $email );
+    } elseif ( ! defined( 'YOURLS_USER' ) && telu_entra_is_enabled() ) {
         $identity = telu_entra_read_identity_cookie();
         if ( is_array( $identity ) && ! empty( $identity['email'] ) && telu_entra_email_is_allowed( $identity['email'] ) ) {
             if ( function_exists( 'yourls_set_user' ) ) {
@@ -383,6 +393,50 @@ function telu_entra_restore_owner_before_authmgr( $actions ) {
             telu_entra_assign_authmgr_role( $identity['email'] );
         }
     }
+    return $actions;
+}
+
+/**
+ * AuthMgrPlus normally writes ownership from YOURLS_USER. Public frontend
+ * scripts do not all execute the normal YOURLS authentication path, so verify
+ * the owner after a successful insert and repair only this authenticated
+ * result.php request with a parameterized update.
+ */
+function telu_entra_verify_public_creation_owner( $actions ) {
+    $email = isset( $GLOBALS['telu_entra_public_creation_email'] )
+        ? strtolower( trim( (string) $GLOBALS['telu_entra_public_creation_email'] ) )
+        : '';
+
+    if ( $email === '' || ! is_array( $actions ) || empty( $actions[0] ) || empty( $actions[2] ) ) {
+        return $actions;
+    }
+
+    $keyword = (string) $actions[2];
+    $owner = function_exists( 'amp_keyword_owner' ) ? amp_keyword_owner( $keyword ) : null;
+    if ( is_string( $owner ) && hash_equals( $email, strtolower( trim( $owner ) ) ) ) {
+        telu_entra_audit( 'homepage_link_created', $email, $keyword );
+        return $actions;
+    }
+
+    global $ydb;
+    if ( ! is_object( $ydb ) || ! defined( 'YOURLS_DB_TABLE_URL' ) ) {
+        telu_entra_audit( 'homepage_owner_failed', $email, 'Database unavailable for ' . $keyword );
+        return $actions;
+    }
+
+    $sql = "UPDATE `" . YOURLS_DB_TABLE_URL . "` SET `user` = :telu_entra_user WHERE `keyword` = :telu_entra_keyword";
+    $ydb->fetchAffected( $sql, array(
+        'telu_entra_user'    => $email,
+        'telu_entra_keyword' => $keyword,
+    ) );
+
+    $owner = function_exists( 'amp_keyword_owner' ) ? amp_keyword_owner( $keyword ) : null;
+    if ( is_string( $owner ) && hash_equals( $email, strtolower( trim( $owner ) ) ) ) {
+        telu_entra_audit( 'homepage_owner_repaired', $email, $keyword );
+    } else {
+        telu_entra_audit( 'homepage_owner_failed', $email, $keyword );
+    }
+
     return $actions;
 }
 

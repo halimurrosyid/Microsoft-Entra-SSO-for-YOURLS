@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+
+- Memastikan pembuatan shortlink dari form homepage `POST /result.php` selalu memakai email sesi Microsoft sebagai owner.
+- Menambahkan verifikasi owner setelah insert dan perbaikan terparameterisasi jika frontend publik melewati jalur autentikasi standar YOURLS.
+- Menambahkan audit `homepage_link_created`, `homepage_owner_repaired`, dan `homepage_owner_failed` untuk diagnosis tanpa merekam token atau secret.
+
 ## 2.1.1
 
 - Mengautentikasi request pembuatan shortlink dari frontend `result.php` menggunakan cookie Entra yang telah diverifikasi.

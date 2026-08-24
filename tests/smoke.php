@@ -6,6 +6,7 @@ define( 'YOURLS_SITE', 'https://go.example.edu' );
 define( 'YOURLS_COOKIEKEY', 'test-cookie-key-that-is-longer-than-thirty-two-characters' );
 define( 'YOURLS_PRIVATE', true );
 define( 'YOURLS_USER', 'member@student.example.edu' );
+define( 'YOURLS_DB_TABLE_URL', 'yourls_url' );
 define( 'YOURLS_ENTRA_TENANT_ID', '11111111-2222-3333-4444-555555555555' );
 define( 'YOURLS_ENTRA_CLIENT_ID', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' );
 define( 'YOURLS_ENTRA_CLIENT_SECRET', 'local-test-secret-value-only' );
@@ -21,6 +22,16 @@ function yourls_get_option( $name ) {
 }
 function yourls_update_option( $name, $value ) {
     $GLOBALS['test_options'][ $name ] = $value;
+}
+function amp_keyword_owner( $keyword ) {
+    return isset( $GLOBALS['test_owner'][ $keyword ] ) ? $GLOBALS['test_owner'][ $keyword ] : null;
+}
+
+class TeluEntraFakeDb {
+    public function fetchAffected( $sql, $binds ) {
+        $GLOBALS['test_owner'][ $binds['telu_entra_keyword'] ] = $binds['telu_entra_user'];
+        return 1;
+    }
 }
 
 require dirname( __DIR__ ) . '/plugin.php';
@@ -67,6 +78,14 @@ $strict_where = telu_entra_strict_owner_list_where( array(
 check( strpos( $strict_where['sql'], '`user` IS NULL' ) === false, 'anonymous legacy URLs must be hidden' );
 check( $strict_where['binds']['telu_entra_owner'] === YOURLS_USER, 'URL list must bind the signed-in owner' );
 check( ! isset( $strict_where['binds']['user'] ), 'obsolete AuthMgrPlus owner bind must be removed' );
+
+$GLOBALS['telu_entra_public_creation_email'] = 'member@student.example.edu';
+$GLOBALS['test_owner']['homepage-test'] = null;
+$ydb = new TeluEntraFakeDb();
+telu_entra_verify_public_creation_owner( array( true, 'https://example.com', 'homepage-test' ) );
+check( $GLOBALS['test_owner']['homepage-test'] === 'member@student.example.edu', 'homepage insert must be repaired to the verified Entra owner' );
+$latest_audit = json_decode( $GLOBALS['test_options'][ TELU_ENTRA_AUDIT_OPTION ], true );
+check( $latest_audit[0]['event'] === 'homepage_owner_repaired', 'homepage owner repair must be audited' );
 
 $random = random_bytes( 64 );
 check( hash_equals( $random, telu_entra_base64url_decode( telu_entra_base64url_encode( $random ) ) ), 'base64url roundtrip' );
