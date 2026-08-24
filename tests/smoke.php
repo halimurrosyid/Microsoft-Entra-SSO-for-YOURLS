@@ -64,6 +64,7 @@ check( ! telu_entra_is_public_creation_request(), 'shortlink paths must never be
 unset( $_REQUEST['url'], $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] );
 
 $amp_role_assignment = array( 'administrator' => array( 'admin' ) );
+$GLOBALS['test_options'][ TELU_ENTRA_ENABLED_OPTION ] = '1';
 telu_entra_assign_authmgr_role( 'member@student.example.edu' );
 telu_entra_assign_authmgr_role( 'sso-editor@unit.example.edu' );
 telu_entra_assign_authmgr_role( 'sso-admin@example.edu' );
@@ -79,6 +80,11 @@ check( strpos( $strict_where['sql'], '`user` IS NULL' ) === false, 'anonymous le
 check( $strict_where['binds']['telu_entra_owner'] === YOURLS_USER, 'URL list must bind the signed-in owner' );
 check( ! isset( $strict_where['binds']['user'] ), 'obsolete AuthMgrPlus owner bind must be removed' );
 
+$GLOBALS['test_options'][ TELU_ENTRA_ENABLED_OPTION ] = '0';
+$disabled_where = array( 'sql' => 'original', 'binds' => array( 'user' => YOURLS_USER ) );
+check( telu_entra_strict_owner_list_where( $disabled_where ) === $disabled_where, 'disabled SSO must not alter AuthMgrPlus owner filtering' );
+$GLOBALS['test_options'][ TELU_ENTRA_ENABLED_OPTION ] = '1';
+
 $GLOBALS['telu_entra_public_creation_email'] = 'member@student.example.edu';
 $GLOBALS['test_owner']['homepage-test'] = null;
 $ydb = new TeluEntraFakeDb();
@@ -92,8 +98,10 @@ check( hash_equals( $random, telu_entra_base64url_decode( telu_entra_base64url_e
 check( telu_entra_base64url_decode( 'bad!' ) === false, 'invalid base64url should fail' );
 check( count( telu_entra_normalize_csv( 'one, two  three' ) ) === 3, 'CSV normalization should work' );
 check( telu_entra_secret_fingerprint() !== '', 'secret fingerprint should be generated' );
+$policy_before = telu_entra_policy_fingerprint();
 check( telu_entra_claims_are_allowed( array() ), 'claims should pass when group and role restrictions are empty' );
 $GLOBALS['test_options'][ TELU_ENTRA_GROUPS_OPTION ] = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+check( ! hash_equals( $policy_before, telu_entra_policy_fingerprint() ), 'authorization policy changes must invalidate existing sessions' );
 check( telu_entra_claims_are_allowed( array( 'groups' => array( 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' ) ) ), 'allowed group should pass' );
 check( ! telu_entra_claims_are_allowed( array( 'groups' => array( 'ffffffff-1111-2222-3333-444444444444' ) ) ), 'unlisted group should fail' );
 $GLOBALS['test_options'][ TELU_ENTRA_GROUPS_OPTION ] = '';

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.3
+
+- Memastikan tombol nonaktif benar-benar menghentikan filter menu, role hardening, statistik, dan pemisahan owner milik plugin tanpa menghapus data shortlink.
+- Mengikat sesi pada Tenant ID, Client ID, domain, Group ID, dan App Role aktif; perubahan kebijakan otomatis meminta login ulang.
+- Menormalkan role AuthMgrPlus sebelum menambahkan user Entra agar assignment lama tidak tertimpa karena perbedaan kapitalisasi nama role.
+- Menambahkan pengujian regresi untuk perilaku enable/disable dan fingerprint kebijakan sesi.
+
 ## 2.1.2
 
 - Memastikan pembuatan shortlink dari form homepage `POST /result.php` selalu memakai email sesi Microsoft sebagai owner.

@@ -3,7 +3,7 @@
 Plugin Name: Microsoft Entra SSO for YOURLS
 Plugin URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 Description: Secure Microsoft Entra ID SSO for YOURLS with configurable domain validation and AuthMgrPlus role integration.
-Version: 2.1.2
+Version: 2.1.3
 Author: Konten Telu
 Author URI: https://github.com/halimurrosyid/Microsoft-Entra-SSO-for-YOURLS
 License: GPL-3.0-or-later
@@ -13,7 +13,7 @@ if ( ! defined( 'YOURLS_ABSPATH' ) ) {
     die();
 }
 
-define( 'TELU_ENTRA_SSO_VERSION', '2.1.2' );
+define( 'TELU_ENTRA_SSO_VERSION', '2.1.3' );
 define( 'TELU_ENTRA_AUTH_COOKIE', '__Host-TelUEntraAuth' );
 define( 'TELU_ENTRA_FLOW_COOKIE', '__Host-TelUEntraFlow' );
 define( 'TELU_ENTRA_JWKS_OPTION', 'telu_entra_sso_jwks_v1' );
@@ -139,6 +139,25 @@ function telu_entra_secret_fingerprint() {
         return '';
     }
     return hash_hmac( 'sha256', $secret, (string) YOURLS_COOKIEKEY );
+}
+
+/**
+ * Bind issued sessions to the current application and authorization policy.
+ * Changing Client ID, tenant, domain, groups, or roles forces a fresh login.
+ */
+function telu_entra_policy_fingerprint() {
+    $groups = array_map( 'strtolower', telu_entra_list_setting( 'ALLOWED_GROUP_IDS' ) );
+    $roles  = array_map( 'strtolower', telu_entra_list_setting( 'ALLOWED_APP_ROLES' ) );
+    sort( $groups, SORT_STRING );
+    sort( $roles, SORT_STRING );
+
+    return hash( 'sha256', implode( "\n", array(
+        strtolower( trim( (string) telu_entra_config( 'TENANT_ID', '' ) ) ),
+        strtolower( trim( (string) telu_entra_config( 'CLIENT_ID', '' ) ) ),
+        strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) ),
+        implode( ',', $groups ),
+        implode( ',', $roles ),
+    ) ) );
 }
 
 function telu_entra_authmgr_available() {
@@ -568,6 +587,7 @@ function telu_entra_handle_callback() {
             'client'  => strtolower( trim( (string) telu_entra_config( 'CLIENT_ID', '' ) ) ),
             'domain'  => strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) ),
             'secret'  => telu_entra_secret_fingerprint(),
+            'policy'  => telu_entra_policy_fingerprint(),
         ), JSON_UNESCAPED_SLASHES ) );
         telu_entra_audit( 'test_success', $email, 'Login Microsoft dan validasi token berhasil.' );
 
@@ -584,6 +604,7 @@ function telu_entra_handle_callback() {
         'tid'       => strtolower( (string) $claims['tid'] ),
         'issued_at' => time(),
         'expires'   => time() + telu_entra_session_lifetime(),
+        'policy'    => telu_entra_policy_fingerprint(),
     );
 
     telu_entra_set_signed_cookie( TELU_ENTRA_AUTH_COOKIE, $identity, $identity['expires'] );
@@ -819,6 +840,9 @@ function telu_entra_display_name_from_claims( $claims, $fallback ) {
  * Change only the visible YOURLS greeting; ownership and permissions keep using email.
  */
 function telu_entra_display_name_in_header( $logout_link ) {
+    if ( ! telu_entra_is_enabled() ) {
+        return $logout_link;
+    }
     $identity = telu_entra_read_identity_cookie();
     if ( ! is_array( $identity ) || empty( $identity['name'] ) ) {
         return $logout_link;
@@ -873,6 +897,13 @@ function telu_entra_string_ends_with( $haystack, $needle ) {
 function telu_entra_assign_authmgr_role( $email ) {
     global $amp_role_assignment;
 
+    // Normalize AuthMgrPlus role keys before adding a dynamic Entra user. This
+    // prevents duplicate Administrator/administrator keys from overwriting
+    // assignments when AuthMgrPlus performs its own normalization later.
+    if ( telu_entra_authmgr_available() && function_exists( 'amp_env_check' ) ) {
+        amp_env_check();
+    }
+
     if ( ! is_array( $amp_role_assignment ) ) {
         $amp_role_assignment = array();
     }
@@ -908,7 +939,7 @@ function telu_entra_assign_authmgr_role( $email ) {
 function telu_entra_harden_authmgr_roles() {
     global $amp_role_capabilities;
 
-    if ( ! telu_entra_authmgr_available() || ! function_exists( 'amp_env_check' ) ) {
+    if ( ! telu_entra_is_enabled() || ! telu_entra_authmgr_available() || ! function_exists( 'amp_env_check' ) ) {
         return;
     }
 
@@ -949,7 +980,7 @@ function telu_entra_current_user_is_administrator() {
  * the AuthMgrPlus Administrator role. The request guard also covers direct URLs.
  */
 function telu_entra_role_based_admin_links( $links ) {
-    if ( telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
+    if ( ! telu_entra_is_enabled() || telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
         return $links;
     }
     foreach ( array( 'tools', 'plugins' ) as $key ) {
@@ -959,7 +990,7 @@ function telu_entra_role_based_admin_links( $links ) {
 }
 
 function telu_entra_role_based_admin_sublinks( $links ) {
-    if ( telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
+    if ( ! telu_entra_is_enabled() || telu_entra_current_user_is_administrator() || ! is_array( $links ) ) {
         return $links;
     }
     unset( $links['plugins'] );
@@ -978,7 +1009,7 @@ function telu_entra_role_based_admin_sublinks( $links ) {
 }
 
 function telu_entra_restrict_administrator_pages() {
-    if ( telu_entra_current_user_is_administrator() || empty( $_SERVER['REQUEST_URI'] ) ) {
+    if ( ! telu_entra_is_enabled() || telu_entra_current_user_is_administrator() || empty( $_SERVER['REQUEST_URI'] ) ) {
         return;
     }
     $path = parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH );
@@ -994,7 +1025,7 @@ function telu_entra_restrict_administrator_pages() {
 }
 
 function telu_entra_strict_owner_list_where( $where ) {
-    if ( telu_entra_current_user_is_administrator() || ! is_array( $where ) ) {
+    if ( ! telu_entra_is_enabled() || telu_entra_current_user_is_administrator() || ! is_array( $where ) ) {
         return $where;
     }
 
@@ -1015,7 +1046,7 @@ function telu_entra_strict_owner_list_where( $where ) {
 }
 
 function telu_entra_strict_owner_db_stats( $return, $where ) {
-    if ( telu_entra_current_user_is_administrator() ) {
+    if ( ! telu_entra_is_enabled() || telu_entra_current_user_is_administrator() ) {
         return $return;
     }
 
@@ -1047,6 +1078,9 @@ function telu_entra_current_user_owns_keyword( $keyword ) {
 }
 
 function telu_entra_strict_owner_api_stats( $return, $shorturl ) {
+    if ( ! telu_entra_is_enabled() ) {
+        return $return;
+    }
     $keyword = str_replace( YOURLS_SITE . '/', '', (string) $shorturl );
     $keyword = function_exists( 'yourls_sanitize_string' ) ? yourls_sanitize_string( $keyword ) : $keyword;
     if ( ! telu_entra_current_user_owns_keyword( $keyword ) ) {
@@ -1060,7 +1094,7 @@ function telu_entra_strict_owner_api_stats( $return, $shorturl ) {
 }
 
 function telu_entra_strict_owner_info_access( $keyword ) {
-    if ( ! yourls_is_private() || telu_entra_current_user_owns_keyword( $keyword ) ) {
+    if ( ! telu_entra_is_enabled() || ! yourls_is_private() || telu_entra_current_user_owns_keyword( $keyword ) ) {
         return;
     }
 
@@ -1134,6 +1168,11 @@ function telu_entra_read_identity_cookie() {
 
     $tenant = strtolower( trim( (string) telu_entra_config( 'TENANT_ID' ) ) );
     if ( ! hash_equals( $tenant, strtolower( (string) $identity['tid'] ) ) ) {
+        telu_entra_clear_cookie( TELU_ENTRA_AUTH_COOKIE );
+        return null;
+    }
+
+    if ( empty( $identity['policy'] ) || ! hash_equals( telu_entra_policy_fingerprint(), (string) $identity['policy'] ) ) {
         telu_entra_clear_cookie( TELU_ENTRA_AUTH_COOKIE );
         return null;
     }
@@ -1482,12 +1521,13 @@ function telu_entra_settings_page() {
                 $current_client = strtolower( trim( (string) telu_entra_config( 'CLIENT_ID', '' ) ) );
                 $current_domain = strtolower( trim( (string) telu_entra_config( 'ALLOWED_ROOT_DOMAIN', '' ) ) );
                 $test_matches = is_array( $test ) && ! empty( $test['success'] ) &&
-                    isset( $test['tenant'], $test['client'], $test['domain'] ) &&
+                    isset( $test['tenant'], $test['client'], $test['domain'], $test['policy'] ) &&
                     hash_equals( $current_tenant, (string) $test['tenant'] ) &&
                     hash_equals( $current_client, (string) $test['client'] ) &&
                     hash_equals( $current_domain, (string) $test['domain'] ) &&
                     isset( $test['secret'] ) &&
-                    hash_equals( telu_entra_secret_fingerprint(), (string) $test['secret'] );
+                    hash_equals( telu_entra_secret_fingerprint(), (string) $test['secret'] ) &&
+                    hash_equals( telu_entra_policy_fingerprint(), (string) $test['policy'] );
 
                 if ( ! $test_matches ) {
                     $notice_error = 'Jalankan Tes Login Microsoft hingga berhasil sebelum mengaktifkan SSO.';
@@ -1587,11 +1627,12 @@ function telu_entra_settings_page() {
     telu_entra_status_row( 'Login lokal darurat', $local_recovery ? 'AKTIF: ' . $local_url : 'Nonaktif (aman)' );
     telu_entra_status_row( 'Pembuatan via API', $enabled ? 'Diblokir; wajib melalui login Microsoft' : 'Mengikuti konfigurasi bawaan YOURLS' );
     telu_entra_status_row( 'Hook homepage', $homepage_seen > 0 ? 'Terdeteksi pada ' . date( 'Y-m-d H:i:s', $homepage_seen ) : 'Belum terdeteksi — buka homepage sekali lalu muat ulang halaman ini' );
-    $last_test_current = is_array( $last_test ) && isset( $last_test['tenant'], $last_test['client'], $last_test['domain'], $last_test['secret'] ) &&
+    $last_test_current = is_array( $last_test ) && isset( $last_test['tenant'], $last_test['client'], $last_test['domain'], $last_test['secret'], $last_test['policy'] ) &&
         hash_equals( strtolower( $tenant ), (string) $last_test['tenant'] ) &&
         hash_equals( strtolower( $client ), (string) $last_test['client'] ) &&
         hash_equals( strtolower( $root ), (string) $last_test['domain'] ) &&
-        hash_equals( telu_entra_secret_fingerprint(), (string) $last_test['secret'] );
+        hash_equals( telu_entra_secret_fingerprint(), (string) $last_test['secret'] ) &&
+        hash_equals( telu_entra_policy_fingerprint(), (string) $last_test['policy'] );
     if ( is_array( $last_test ) && ! empty( $last_test['success'] ) && $last_test_current ) {
         $tested_at = isset( $last_test['time'] ) ? date( 'Y-m-d H:i:s', (int) $last_test['time'] ) : '-';
         $tested_email = isset( $last_test['email'] ) ? (string) $last_test['email'] : '-';

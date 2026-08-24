@@ -86,6 +86,8 @@ Domain tidak lagi ditetapkan ke organisasi tertentu. Domain dapat dikunci melalu
 
 Pembuatan dari homepage yang mengirim form ke `result.php` diikat ke sesi Microsoft Entra yang telah diverifikasi. Plugin menetapkan email tersebut sebagai `YOURLS_USER` sebelum proses insert, lalu memverifikasi owner setelah insert. Jika frontend publik melewati jalur autentikasi standar YOURLS, plugin memperbaiki kolom owner dengan query terparameterisasi sehingga link langsung muncul pada dashboard pembuatnya. Request `result.php` tanpa sesi valid ditolak.
 
+Sesi login juga terikat pada Tenant ID, Client ID, domain, Group ID, dan App Role yang sedang berlaku. Mengubah salah satu kebijakan tersebut membatalkan sesi plugin lama dan meminta pengguna login kembali. Menonaktifkan SSO melalui halaman pengaturan menghentikan seluruh pembatasan tambahan plugin; shortlink dan data owner tetap berada di database dan AuthMgrPlus kembali bekerja sesuai konfigurasinya sendiri.
+
 AuthMgrPlus wajib aktif sebelum tes atau aktivasi SSO. Role pengguna Microsoft:
 
 - Default: `Contributor`.
@@ -124,7 +126,7 @@ Aturan akses:
 9. Buat shortlink dan pastikan hanya pembuat serta Administrator yang melihatnya.
 10. Buka shortlink tanpa sesi; redirect harus tetap berjalan.
 
-Tes memakai alur Microsoft sebenarnya. Token tidak disimpan. Hasil tes terikat pada Tenant ID, Client ID, dan fingerprint satu arah Client Secret; perubahan konfigurasi mengharuskan tes ulang.
+Tes memakai alur Microsoft sebenarnya. Token tidak disimpan. Hasil tes terikat pada Tenant ID, Client ID, domain, Group ID, App Role, dan fingerprint satu arah Client Secret; perubahan konfigurasi mengharuskan tes ulang.
 
 ## Enable, disable, reset, dan penghapusan
 
@@ -171,6 +173,8 @@ Daftarkan URI tersebut pada App Registration bila digunakan.
 5. Aktifkan recovery lokal sementara, buka **Microsoft SSO**, pastikan domain organisasi tampil, lalu simpan.
 6. Jalankan tes login kembali sebelum mengaktifkan SSO.
 7. Konstanta lama dapat diganti bertahap ke `YOURLS_ENTRA_*`.
+
+Upgrade ke 2.1.3 akan meminta semua pengguna Microsoft login ulang satu kali karena format sesi kini terikat pada fingerprint kebijakan aktif. Shortlink, statistik, dan data owner tidak berubah.
 
 ## Privasi
 
