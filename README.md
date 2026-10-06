@@ -19,6 +19,10 @@ Homepage `/` dan halaman administrasi memerlukan login Microsoft. Shortlink yang
 - Pemisahan shortlink per pengguna melalui AuthMgrPlus.
 - Contributor dan Editor hanya melihat serta mengelola shortlink miliknya.
 - Administrator melihat seluruh shortlink, termasuk link lama tanpa pemilik.
+- Custom keyword mempertahankan angka, huruf kecil/besar, tanda hubung (`-`), dan garis bawah (`_`).
+- Perlindungan otomatis kata kunci sistem (*reserved keywords*) dan pencegahan *self-redirect loop*.
+- Tombol salin 1-klik (*copy link*) dengan animasi indikator tersalin dan generator QR Code resmi beresolusi tinggi.
+- Tombol keluar (*logout*) langsung di navigasi depan untuk komputer publik bersama.
 - Client Secret tidak disimpan di database atau ditampilkan kembali.
 - Tidak membutuhkan Composer.
 
@@ -85,6 +89,10 @@ Domain tidak lagi ditetapkan ke organisasi tertentu. Domain dapat dikunci melalu
 ## 5. AuthMgrPlus dan kepemilikan
 
 Pembuatan dari homepage yang mengirim form ke `result.php` diikat ke sesi Microsoft Entra yang telah diverifikasi. Plugin menetapkan email tersebut sebagai `YOURLS_USER` sebelum proses insert, lalu memverifikasi owner setelah insert. Jika frontend publik melewati jalur autentikasi standar YOURLS, plugin memperbaiki kolom owner dengan query terparameterisasi sehingga link langsung muncul pada dashboard pembuatnya. Request `result.php` tanpa sesi valid ditolak.
+
+Saat login, plugin juga menormalkan owner lama yang merupakan email pengguna yang sama tetapi memiliki perbedaan kapital atau spasi di awal/akhir. Ini diperlukan karena AuthMgrPlus 2.3.1 membandingkan owner secara persis saat mengizinkan edit dan hapus. Baris anonim atau milik identitas lain tidak pernah diambil alih.
+
+Custom keyword menerima `0-9`, `a-z`, `A-Z`, tanda hubung (`-`), dan garis bawah (`_`). Karakter pemisah URL seperti `/`, `?`, `#`, spasi, dan simbol lain sengaja ditolak karena akan mengubah struktur alamat. Input yang tidak valid menghasilkan pesan kesalahan dan tidak lagi diam-diam dibuat dalam bentuk terpotong. Proses ini tidak mengubah charset generator 36/62 bawaan, sehingga keyword otomatis dan shortlink lama tidak berubah.
 
 Sesi login juga terikat pada Tenant ID, Client ID, domain, Group ID, dan App Role yang sedang berlaku. Mengubah salah satu kebijakan tersebut membatalkan sesi plugin lama dan meminta pengguna login kembali. Menonaktifkan SSO melalui halaman pengaturan menghentikan seluruh pembatasan tambahan plugin; shortlink dan data owner tetap berada di database dan AuthMgrPlus kembali bekerja sesuai konfigurasinya sendiri.
 
@@ -174,7 +182,7 @@ Daftarkan URI tersebut pada App Registration bila digunakan.
 6. Jalankan tes login kembali sebelum mengaktifkan SSO.
 7. Konstanta lama dapat diganti bertahap ke `YOURLS_ENTRA_*`.
 
-Upgrade ke 2.1.3 akan meminta semua pengguna Microsoft login ulang satu kali karena format sesi kini terikat pada fingerprint kebijakan aktif. Shortlink, statistik, dan data owner tidak berubah.
+Upgrade ke 2.1.3 atau versi yang lebih baru akan meminta pengguna dari versi lama login ulang satu kali karena format sesi kini terikat pada fingerprint kebijakan aktif. Shortlink, statistik, dan data owner tidak berubah. Versi 2.1.4 memperbaiki akses edit untuk owner lama yang emailnya hanya berbeda kapital atau spasi luar. Versi 2.1.5 mempertahankan huruf kapital, tanda hubung, dan garis bawah pada custom keyword.
 
 ## Privasi
 

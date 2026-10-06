@@ -1,0 +1,2680 @@
+:root {
+    --telu-primary: #b72025;
+    --telu-primary-dark: #8f171c;
+    --telu-accent: #ee2e24;
+    --telu-navy: #25282a;
+    --telu-text: #243746;
+    --telu-muted: #667785;
+    --telu-border: #dce5e9;
+    --telu-surface: #ffffff;
+    --telu-background: #f3f7f8;
+    --telu-shadow: 0 10px 32px rgba(18, 52, 77, .10);
+    --telu-radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body.telu-professional-theme {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--telu-text);
+    background:
+        radial-gradient(circle at 8% 0%, rgba(183, 32, 37, .10), transparent 28rem),
+        linear-gradient(180deg, #f9fbfc 0, var(--telu-background) 100%);
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.telu-professional-theme #wrap {
+    width: min(1180px, calc(100% - 40px));
+    margin: 28px auto 0;
+}
+
+.telu-professional-theme header[role="banner"],
+.telu-professional-theme #yourls-logo,
+.telu-professional-theme #wrap > h1:first-child { display: none !important; }
+
+.telu-brand-header {
+    clear: both !important;
+    width: 100% !important;
+    overflow: hidden;
+    margin: 0 0 18px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: var(--telu-radius);
+    background: linear-gradient(125deg, #8f171c, var(--telu-primary) 62%, #db3036);
+    box-shadow: var(--telu-shadow);
+}
+
+.telu-brand-link {
+    display: flex;
+    min-height: 96px;
+    align-items: center;
+    gap: 22px;
+    padding: 18px 26px;
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+.telu-brand-logo-wrap {
+    display: grid;
+    min-width: 168px;
+    min-height: 58px;
+    place-items: center;
+    padding: 9px 16px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.telu-brand-logo { display: block; width: auto; max-width: 145px; height: 45px; object-fit: contain; }
+.telu-brand-copy { display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,.35); padding-left: 22px; }
+.telu-brand-copy strong { color: #fff; font-size: clamp(24px, 4vw, 36px); font-weight: 750; letter-spacing: -.035em; line-height: 1.05; }
+.telu-brand-copy small { margin-top: 7px; color: rgba(255,255,255,.82); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+
+.telu-professional-theme #admin_menu,
+.telu-professional-theme main,
+.telu-professional-theme #login,
+.telu-professional-theme .notice,
+.telu-professional-theme .error {
+    border-color: var(--telu-border);
+    border-radius: var(--telu-radius);
+}
+
+.telu-professional-theme #admin_menu {
+    margin: 0 0 18px;
+    padding: 10px 18px;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.telu-professional-theme #admin_menu li { margin: 0; }
+.telu-professional-theme #admin_menu a { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 8px; color: #334155; text-decoration: none; font-weight: 600; }
+.telu-professional-theme #admin_menu a:hover,
+.telu-professional-theme #admin_menu a:focus { color: #b72025; background: #fef2f2; }
+
+.telu-professional-theme main,
+.telu-professional-theme #login {
+    padding: 22px;
+    border: 1px solid var(--telu-border);
+    background: var(--telu-surface);
+    box-shadow: var(--telu-shadow);
+}
+
+.telu-professional-theme #login { width: min(440px, 100%); margin: 40px auto; }
+.telu-professional-theme h1,
+.telu-professional-theme h2,
+.telu-professional-theme h3 { color: var(--telu-navy); letter-spacing: -.02em; }
+.telu-professional-theme h2 { font-size: 24px; }
+
+.telu-professional-theme input.text,
+.telu-professional-theme input[type="text"],
+.telu-professional-theme input[type="password"],
+.telu-professional-theme input[type="number"],
+.telu-professional-theme textarea,
+.telu-professional-theme select {
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid #cbd8dd;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--telu-text);
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.telu-professional-theme input:focus,
+.telu-professional-theme textarea:focus,
+.telu-professional-theme select:focus {
+    border-color: var(--telu-primary);
+    box-shadow: 0 0 0 3px rgba(183,32,37,.15);
+}
+
+.telu-professional-theme .button,
+.telu-professional-theme button,
+.telu-professional-theme input[type="submit"],
+.telu-professional-theme input[type="button"] {
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid var(--telu-primary);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--telu-primary-dark);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.telu-professional-theme .button.primary,
+.telu-professional-theme input.primary,
+.telu-professional-theme #add-button,
+.telu-professional-theme #submit {
+    border-color: var(--telu-primary);
+    background: var(--telu-primary);
+    color: #fff;
+}
+
+.telu-professional-theme .button:hover,
+.telu-professional-theme button:hover,
+.telu-professional-theme input[type="submit"]:hover,
+.telu-professional-theme input[type="button"]:hover { border-color: var(--telu-primary-dark); background-color: var(--telu-primary-dark); color: #fff; }
+
+.telu-professional-theme #new_url { margin-bottom: 20px; border-radius: 12px; background: linear-gradient(135deg, #fff0f0, #fffafa); }
+.telu-professional-theme #main_table { overflow: hidden; width: 100%; border: 1px solid var(--telu-border); border-collapse: separate; border-spacing: 0; border-radius: 12px; background: #fff; }
+.telu-professional-theme #main_table thead th { padding: 12px 9px; border-color: var(--telu-border); background: #f9e9e9; color: var(--telu-navy); font-size: 12px; text-transform: uppercase; letter-spacing: .035em; }
+.telu-professional-theme #main_table td { padding: 11px 9px; border-color: #e8eef1; vertical-align: top; }
+.telu-professional-theme #main_table tbody tr:nth-child(even) { background: #f8fafb; }
+.telu-professional-theme #main_table tbody tr:hover { background: #fff1f1; }
+.telu-professional-theme a { color: var(--telu-primary); }
+.telu-professional-theme a:hover { color: var(--telu-accent); }
+
+.telu-professional-theme .notice { border-left: 4px solid var(--telu-primary); background: #fff1f1; }
+.telu-professional-theme .error { border-left: 4px solid var(--telu-accent); background: #fff3f2; }
+.telu-professional-theme #footer { width: min(1180px, calc(100% - 40px)); margin: 18px auto 28px; padding: 16px; border-top: 1px solid var(--telu-border); color: var(--telu-muted); text-align: center; }
+.telu-professional-theme #footer a { color: var(--telu-primary-dark); }
+
+@media (max-width: 760px) {
+    .telu-professional-theme #wrap,
+    .telu-professional-theme #footer { width: min(100% - 22px, 1180px); }
+    .telu-professional-theme #wrap { margin-top: 11px; }
+    .telu-brand-link { min-height: 82px; gap: 13px; padding: 13px; }
+    .telu-brand-logo-wrap { min-width: 126px; padding: 7px 10px; }
+    .telu-brand-logo { max-width: 112px; height: 38px; }
+    .telu-brand-copy { padding-left: 13px; }
+    .telu-brand-copy strong { font-size: 22px; }
+    .telu-brand-copy small { font-size: 10px; }
+    .telu-professional-theme main { padding: 14px; overflow-x: auto; }
+    .telu-professional-theme #admin_menu { overflow-x: auto; white-space: nowrap; }
+    .telu-professional-theme input.text,
+    .telu-professional-theme input[type="text"],
+    .telu-professional-theme input[type="password"],
+    .telu-professional-theme textarea { max-width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .telu-professional-theme *,
+    .telu-professional-theme *::before,
+    .telu-professional-theme *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+
+@media print {
+    .telu-professional-theme #admin_menu,
+    .telu-professional-theme .telu-brand-header { box-shadow: none; }
+}
+
+/* Compatibility layer for older dashboard and standalone public frontend */
+body.telu-professional-theme,
+body.telu-public-interface {
+    color: #2b2d30 !important;
+    background: #f7f3f2 !important;
+    background-image: radial-gradient(circle at 88% 0, rgba(183,32,37,.09), transparent 28rem) !important;
+}
+
+.telu-hide-original-brand,
+.telu-hide-old-public-header,
+body.telu-professional-theme img[src*="yourls-logo"],
+body.telu-public-interface img[src*="yourls-logo"],
+body.telu-professional-theme img[alt="YOURLS"],
+body.telu-public-interface img[alt="YOURLS"],
+body.telu-professional-theme #yourls-logo,
+body.telu-public-interface #yourls-logo,
+body.telu-professional-theme #logo img[alt="YOURLS"],
+body.telu-public-interface #logo img[alt="YOURLS"],
+body.telu-professional-theme h1:has(img[src*="yourls-logo"]),
+body.telu-public-interface h1:has(img[src*="yourls-logo"]),
+body.telu-professional-theme header:has(img[src*="yourls-logo"]),
+body.telu-public-interface header:has(img[src*="yourls-logo"]) {
+    display: none !important;
+}
+
+body.telu-professional-theme #wrap {
+    width: min(1180px, calc(100% - 36px)) !important;
+    padding: 18px 22px !important;
+    border: 1px solid #e7dedd !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    box-shadow: 0 18px 50px rgba(70,24,26,.10) !important;
+}
+
+body.telu-professional-theme #admin_menu {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px 12px !important;
+    padding: 10px 18px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+}
+
+body.telu-professional-theme #admin_menu li,
+body.telu-professional-theme #admin_menu li a { float: none !important; }
+body.telu-professional-theme #admin_menu li a { color: #334155 !important; }
+
+body.telu-professional-theme #new_url {
+    padding: 18px !important;
+    border: 1px solid #edd5d4 !important;
+    border-radius: 12px !important;
+    background: #fff5f4 !important;
+}
+
+body.telu-professional-theme #main_table thead th,
+body.telu-professional-theme #main_table tfoot th {
+    color: #fff !important;
+    background: #a91c21 !important;
+}
+
+body.telu-professional-theme #main_table tbody tr:nth-child(even),
+body.telu-professional-theme #main_table tr.even { background: #fbf7f6 !important; }
+body.telu-professional-theme #main_table tbody tr:hover { background: #fff0ef !important; }
+
+body.telu-professional-theme input[type="button"],
+body.telu-professional-theme input[type="submit"],
+body.telu-professional-theme button,
+body.telu-professional-theme .button {
+    border-color: #a91c21 !important;
+    border-radius: 8px !important;
+}
+
+body.telu-professional-theme input[type="button"]:hover,
+body.telu-professional-theme input[type="submit"]:hover,
+body.telu-professional-theme button:hover,
+body.telu-professional-theme .button:hover {
+    color: #fff !important;
+    background-color: #a91c21 !important;
+}
+
+.telu-public-brand {
+    display: flex;
+    min-height: 112px;
+    align-items: center;
+    gap: 24px;
+    margin: 0 0 20px;
+    padding: 22px 28px;
+    border-radius: 16px;
+    background: linear-gradient(120deg,#8f171c,#bd2228 68%,#dc353b);
+    box-shadow: 0 16px 36px rgba(106,23,26,.18);
+}
+.telu-public-brand img { width: 155px; height: auto; padding: 10px 14px; border-radius: 10px; background: #fff; }
+.telu-public-brand div { display: flex; flex-direction: column; padding-left: 23px; border-left: 1px solid rgba(255,255,255,.34); }
+.telu-public-brand div > span,
+.telu-public-identity > span > small { margin-top: 7px; color: rgba(255,255,255,.82); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+
+body.telu-public-interface #container,
+body.telu-public-interface > .container,
+body.telu-public-interface #wrap {
+    width: min(980px, calc(100% - 32px)) !important;
+    margin: 24px auto !important;
+}
+
+body.telu-public-interface header,
+body.telu-public-interface #header,
+body.telu-public-interface .header {
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: #a91c21 !important;
+}
+
+body.telu-public-interface header h1,
+body.telu-public-interface #header h1,
+body.telu-public-interface .header h1 { color: #fff !important; }
+
+body.telu-public-interface main,
+body.telu-public-interface section,
+body.telu-public-interface .content,
+body.telu-public-interface .panel {
+    border-color: #e6dcda !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    box-shadow: 0 10px 28px rgba(69,31,31,.07) !important;
+}
+
+body.telu-public-interface input[type="text"],
+body.telu-public-interface input[type="url"] {
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+    border: 1px solid #d8cecc !important;
+    border-radius: 8px !important;
+    outline: none !important;
+}
+body.telu-public-interface input:focus { border-color: #b72025 !important; box-shadow: 0 0 0 3px rgba(183,32,37,.12) !important; }
+body.telu-public-interface button,
+body.telu-public-interface input[type="submit"] { min-height: 42px !important; padding: 9px 18px !important; border: 0 !important; border-radius: 8px !important; color: #fff !important; background: #b72025 !important; font-weight: 750 !important; }
+body.telu-public-interface footer { border-color: #b72025 !important; color: #686365 !important; background: #fff !important; }
+
+@media (max-width: 640px) {
+    .telu-public-brand { min-height: 90px; gap: 13px; padding: 15px; }
+    .telu-public-brand img { width: 122px; }
+    .telu-public-brand div { padding-left: 13px; }
+    .telu-public-brand strong { font-size: 24px; }
+    body.telu-professional-theme #wrap { width: calc(100% - 18px) !important; padding: 10px !important; }
+}
+
+/* YOURLS legacy admin layout normalization */
+body.telu-professional-theme #wrap {
+    max-width: 1180px !important;
+    overflow: hidden !important;
+}
+
+body.telu-professional-theme .telu-brand-header {
+    margin-bottom: 16px !important;
+}
+
+body.telu-professional-theme #admin_menu {
+    min-height: 48px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 20px !important;
+    padding: 10px 18px !important;
+    list-style: none !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    color: #334155 !important;
+    font-size: 13.5px !important;
+    box-sizing: border-box !important;
+    gap: 10px 14px !important;
+}
+
+body.telu-professional-theme #admin_menu ul,
+body.telu-professional-theme #admin_menu ol {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+body.telu-professional-theme #admin_menu li {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    color: #334155 !important;
+}
+
+body.telu-professional-theme #admin_menu li::before,
+body.telu-professional-theme #admin_menu li::marker { content: none !important; }
+
+/* Greeting item on the left: Hello User (Logout) */
+body.telu-professional-theme #admin_menu #admin_menu_logout_link {
+    color: #475569 !important;
+    font-size: 13.5px !important;
+    margin-right: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+body.telu-professional-theme #admin_menu #admin_menu_logout_link strong {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+/* Logout link - High contrast red button */
+body.telu-professional-theme #admin_menu #admin_menu_logout_link a {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 5px 12px !important;
+    margin-left: 6px !important;
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+    font-size: 12.5px !important;
+    line-height: 1.2 !important;
+    background: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    border-radius: 7px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08) !important;
+}
+
+body.telu-professional-theme #admin_menu #admin_menu_logout_link a:hover {
+    color: #ffffff !important;
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Navigation items: Admin interface, Plugins, Tools */
+body.telu-professional-theme #admin_menu li a {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 7px 14px !important;
+    line-height: 1.25 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    font-size: 13.5px !important;
+    text-decoration: none !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+body.telu-professional-theme #admin_menu li a:hover {
+    color: #b72025 !important;
+    border-color: #fca5a5 !important;
+    background: #fef2f2 !important;
+}
+
+/* Active navigation item */
+body.telu-professional-theme #admin_menu li.current a,
+body.telu-professional-theme #admin_menu li.active a,
+body.telu-professional-theme #admin_menu li a.active,
+body.telu-page-index #admin_menu #admin_menu_admin_link a,
+body.telu-page-plugins #admin_menu #admin_menu_plugins_link a,
+body.telu-page-tools #admin_menu #admin_menu_tools_link a {
+    color: #ffffff !important;
+    background: #b72025 !important;
+    border-color: #b72025 !important;
+    box-shadow: 0 2px 6px rgba(183, 32, 37, 0.25) !important;
+}
+
+body.telu-professional-theme #new_url {
+    width: 100% !important;
+    margin: 14px 0 20px !important;
+    padding: 18px !important;
+}
+
+body.telu-professional-theme #new_url > div,
+body.telu-professional-theme #new_url form,
+body.telu-professional-theme #new_url form > div {
+    width: 100% !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
+body.telu-professional-theme #new_url form > div {
+    display: grid !important;
+    grid-template-columns: max-content minmax(260px, 1fr) max-content minmax(90px, 150px) !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+body.telu-professional-theme #new_url label {
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+body.telu-professional-theme #new_url #add-url,
+body.telu-professional-theme #new_url #add-keyword {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+body.telu-professional-theme #new_url #add-button {
+    grid-column: 2 / 5 !important;
+    justify-self: center !important;
+    min-width: 150px !important;
+    margin: 2px 0 0 !important;
+}
+
+body.telu-professional-theme #main_table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+}
+
+body.telu-professional-theme #main_table th,
+body.telu-professional-theme #main_table td {
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    padding: 10px 9px !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+}
+
+body.telu-professional-theme #main_table thead th:nth-child(1) { width: 20% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(2) { width: 30% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(3) { width: 9% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(4) { width: 11% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(5) { width: 7% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(6) { width: 15% !important; }
+body.telu-professional-theme #main_table thead th:nth-child(7) { width: 168px !important; min-width: 168px !important; max-width: 168px !important; }
+
+body.telu-professional-theme #main_table th.actions,
+body.telu-professional-theme #main_table td.actions,
+body.telu-professional-theme #main_table td:last-child {
+    width: 168px !important;
+    min-width: 168px !important;
+    white-space: nowrap !important;
+    padding: 6px 10px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+body.telu-professional-theme #main_table td.actions,
+body.telu-professional-theme #main_table td:last-child {
+    font-size: 0 !important;
+}
+
+body.telu-professional-theme #main_table td:last-child > div,
+body.telu-professional-theme #main_table td:last-child .actions,
+body.telu-professional-theme #main_table td.actions > div,
+body.telu-professional-theme #main_table td.actions .action_tag,
+body.telu-professional-theme #main_table td:last-child .action_tag {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    width: 100% !important;
+}
+
+body.telu-professional-theme #main_table td:last-child a,
+body.telu-professional-theme #main_table td:last-child .button,
+body.telu-professional-theme #main_table td.actions a,
+body.telu-professional-theme #main_table td.actions .button {
+    display: inline-flex !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+    vertical-align: middle !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.telu-professional-theme #main_table td:last-child a.button:hover,
+body.telu-professional-theme #main_table td:last-child a.button:focus-visible,
+body.telu-professional-theme #main_table td.actions a.button:hover,
+body.telu-professional-theme #main_table td.actions a.button:focus-visible {
+    border-color: #b72025 !important;
+    background-color: #fff1f2 !important;
+    box-shadow: 0 2px 6px rgba(183, 32, 37, 0.2) !important;
+    transform: translateY(-1px) !important;
+    outline: none !important;
+}
+
+body.telu-professional-theme #main_table td.actions a.button-delete:hover,
+body.telu-professional-theme #main_table td.actions a[id^="delete_link_"]:hover,
+body.telu-professional-theme #main_table td:last-child a.button-delete:hover {
+    border-color: #dc2626 !important;
+    background-color: #fef2f2 !important;
+}
+
+body.telu-professional-theme #filter_form input[type="text"] { width: 110px !important; }
+body.telu-professional-theme #filter_form input[type="submit"],
+body.telu-professional-theme #filter_form input[type="button"] { min-width: 76px !important; }
+
+body.telu-professional-theme #footer {
+    width: min(1180px, calc(100% - 36px)) !important;
+    max-width: 1180px !important;
+    margin: 18px auto 28px !important;
+    border: 1px solid #e1d6d4 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+}
+
+@media (max-width: 850px) {
+    body.telu-professional-theme #new_url form > div {
+        grid-template-columns: 1fr !important;
+    }
+    body.telu-professional-theme #new_url label { white-space: normal !important; }
+    body.telu-professional-theme #new_url #add-button { grid-column: 1 !important; width: 100% !important; }
+    body.telu-professional-theme #main_table { min-width: 780px !important; }
+    body.telu-professional-theme main { overflow-x: auto !important; }
+}
+
+/* Branded authenticated homepage */
+body.telu-theme-homepage {
+    min-height: 100vh;
+    margin: 0;
+    color: #292d32;
+    background:
+        radial-gradient(circle at 85% 5%, rgba(238,46,36,.13), transparent 25rem),
+        radial-gradient(circle at 8% 88%, rgba(183,32,37,.08), transparent 30rem),
+        #f8f6f5;
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.telu-home-shell { width: min(1180px, calc(100% - 42px)); margin: 0 auto; }
+.telu-home-nav { display: flex; min-height: 92px; align-items: center; justify-content: space-between; gap: 24px; }
+.telu-home-logo-link { display: inline-flex; align-items: center; text-decoration: none; }
+.telu-home-logo-link img { display: block; width: 168px; height: auto; }
+.telu-home-nav nav { display: flex; align-items: center; gap: 18px; }
+.telu-home-user { max-width: 290px; overflow: hidden; color: #6a6e73; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.telu-home-user strong { color: #292d32; }
+.telu-home-admin-link { padding: 10px 15px; border: 1px solid #e0d9d7; border-radius: 9px; color: #7f171c; background: rgba(255,255,255,.78); font-size: 13px; font-weight: 750; text-decoration: none; }
+.telu-home-admin-link:hover { border-color: #b72025; background: #fff; }
+
+.telu-home-main { display: grid; min-height: calc(100vh - 184px); grid-template-columns: minmax(0, 1fr) minmax(400px, 510px); align-items: center; gap: clamp(50px, 8vw, 110px); padding: 54px 0 76px; }
+.telu-home-hero { position: relative; }
+.telu-home-hero::before { position: absolute; z-index: -1; top: -54px; left: -75px; width: 180px; height: 180px; border: 34px solid rgba(183,32,37,.055); border-radius: 50%; content: ""; }
+.telu-home-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; color: #9a1d22; font-size: 12px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.telu-home-kicker span { display: block; width: 34px; height: 3px; border-radius: 3px; background: #d1262c; }
+.telu-home-hero h1 { margin: 0; color: #272a2d; font-size: clamp(42px, 5.1vw, 68px); font-weight: 780; letter-spacing: -.055em; line-height: 1.03; }
+.telu-home-hero h1 em { color: #b72025; font-style: normal; }
+.telu-home-hero > p { max-width: 610px; margin: 25px 0 28px; color: #686c70; font-size: 17px; line-height: 1.75; }
+.telu-home-trust { display: flex; flex-wrap: wrap; gap: 10px; }
+.telu-home-trust span { padding: 8px 11px; border: 1px solid #eadfdd; border-radius: 999px; color: #595d60; background: rgba(255,255,255,.68); font-size: 12px; font-weight: 650; }
+
+.telu-home-card { position: relative; padding: 32px; border: 1px solid rgba(222,208,205,.9); border-radius: 22px; background: rgba(255,255,255,.94); box-shadow: 0 28px 70px rgba(88,31,31,.13); }
+.telu-home-card::before { position: absolute; top: 0; right: 30px; left: 30px; height: 4px; border-radius: 0 0 8px 8px; background: linear-gradient(90deg, #8f171c, #ee2e24); content: ""; }
+.telu-card-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+.telu-card-icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #b72025, #e13a40); box-shadow: 0 8px 18px rgba(183,32,37,.24); font-size: 24px; font-weight: 500; }
+.telu-card-heading h2 { margin: 0 0 3px; color: #292d32; font-size: 22px; letter-spacing: -.025em; }
+.telu-card-heading p { margin: 0; color: #85888b; font-size: 13px; }
+.telu-home-card label { display: block; margin: 0 0 8px; color: #3b3e42; font-size: 13px; font-weight: 750; }
+.telu-home-card label small { color: #999; font-weight: 500; }
+.telu-home-card input { width: 100%; min-height: 50px; padding: 12px 14px; border: 1px solid #ddd5d3; border-radius: 10px; color: #282c30; background: #fbfaf9; font: inherit; outline: none; transition: .18s ease; }
+.telu-home-card input:focus { border-color: #b72025; background: #fff; box-shadow: 0 0 0 4px rgba(183,32,37,.10); }
+.telu-field-row { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; margin-top: 17px; }
+.telu-short-preview span { display: flex; min-height: 50px; align-items: center; overflow: hidden; padding: 12px; border: 1px dashed #d9ccca; border-radius: 10px; color: #8b8e90; background: #faf8f7; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.telu-short-preview strong { color: #b72025; }
+#telu-create-button { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: center; gap: 12px; margin-top: 22px; padding: 12px 18px; border: 0; border-radius: 11px; color: #fff; background: linear-gradient(105deg, #96191e, #c6252b 64%, #e23d43); box-shadow: 0 12px 24px rgba(183,32,37,.22); font: inherit; font-weight: 800; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+#telu-create-button:hover { transform: translateY(-1px); box-shadow: 0 16px 30px rgba(183,32,37,.28); }
+#telu-create-button:disabled { cursor: wait; opacity: .65; transform: none; }
+#telu-create-button b { font-size: 20px; font-weight: 500; }
+.telu-card-note { margin: 17px 0 0; color: #9a9c9e; font-size: 11px; text-align: center; }
+.telu-result { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding: 14px; border-radius: 11px; font-size: 13px; }
+.telu-result.is-success { border: 1px solid #b9dfca; color: #205b39; background: #eefaf3; }
+.telu-result.is-error { border: 1px solid #edc5c5; color: #921b20; background: #fff1f1; }
+.telu-result div { min-width: 0; }
+.telu-result small { display: block; margin-bottom: 3px; }
+.telu-result a { display: block; overflow: hidden; color: #17613b; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.telu-result button { flex: 0 0 auto; padding: 8px 12px; border: 1px solid #9ecfb3; border-radius: 8px; color: #205b39; background: #fff; font-weight: 750; cursor: pointer; }
+.telu-home-footer { display: flex; min-height: 72px; align-items: center; justify-content: space-between; border-top: 1px solid #e4dcda; color: #8b8e91; font-size: 12px; }
+
+@media (max-width: 900px) {
+    .telu-home-main { grid-template-columns: 1fr; gap: 45px; padding-top: 42px; }
+    .telu-home-hero { max-width: 720px; text-align: center; }
+    .telu-home-kicker, .telu-home-trust { justify-content: center; }
+    .telu-home-hero > p { margin-right: auto; margin-left: auto; }
+    .telu-home-card { width: min(100%, 570px); margin: 0 auto; }
+}
+
+@media (max-width: 600px) {
+    .telu-home-shell { width: min(100% - 24px, 1180px); }
+    .telu-home-nav { min-height: 76px; }
+    .telu-home-logo-link img { width: 132px; }
+    .telu-home-user { display: none; }
+    .telu-home-admin-link { padding: 8px 11px; font-size: 11px; }
+    .telu-home-main { min-height: auto; padding: 37px 0 48px; }
+    .telu-home-hero h1 { font-size: 38px; }
+    .telu-home-hero > p { font-size: 15px; }
+    .telu-home-card { padding: 24px 18px; border-radius: 18px; }
+    .telu-field-row { grid-template-columns: 1fr; }
+    .telu-home-footer { flex-direction: column; justify-content: center; gap: 4px; }
+}
+
+/* 1.3 — page-aware readability and legacy public homepage */
+body.telu-professional-theme #wrap {
+    width: min(1320px, calc(100% - 48px)) !important;
+    max-width: 1320px !important;
+}
+
+body.telu-professional-theme main,
+body.telu-professional-theme #main,
+body.telu-professional-theme #content {
+    width: 100% !important;
+    max-width: none !important;
+    float: none !important;
+}
+
+/* URL-management table only: do not force these widths on Plugins or Tools. */
+body.telu-page-index #main_table thead th:nth-child(1) { width: 22% !important; }
+body.telu-page-index #main_table thead th:nth-child(2) { width: 30% !important; }
+body.telu-page-index #main_table thead th:nth-child(3) { width: 9% !important; }
+body.telu-page-index #main_table thead th:nth-child(4) { width: 10% !important; }
+body.telu-page-index #main_table thead th:nth-child(5) { width: 7% !important; }
+body.telu-page-index #main_table thead th:nth-child(6) { width: 11% !important; }
+body.telu-page-index #main_table thead th:nth-child(7) { width: 11% !important; }
+body.telu-page-index #main_table td { line-height: 1.45 !important; }
+body.telu-page-index #main_table td:first-child,
+body.telu-page-index #main_table td:nth-child(2) { font-size: 13px !important; }
+
+body.telu-page-plugins #main_table {
+    table-layout: auto !important;
+}
+body.telu-page-plugins #main_table th,
+body.telu-page-plugins #main_table td {
+    width: auto !important;
+    min-width: 90px !important;
+    max-width: none !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+}
+body.telu-page-plugins #main_table th:first-child,
+body.telu-page-plugins #main_table td:first-child { width: 24% !important; }
+body.telu-page-plugins #main_table th:nth-child(2),
+body.telu-page-plugins #main_table td:nth-child(2) { width: 9% !important; }
+body.telu-page-plugins #main_table th:nth-child(3),
+body.telu-page-plugins #main_table td:nth-child(3) { width: 43% !important; }
+body.telu-page-plugins #main_table th:nth-child(4),
+body.telu-page-plugins #main_table td:nth-child(4) { width: 15% !important; }
+body.telu-page-plugins #main_table th:last-child,
+body.telu-page-plugins #main_table td:last-child { width: 9% !important; text-align: center !important; }
+
+body.telu-page-tools main,
+body.telu-page-tools #main,
+body.telu-page-tools #content {
+    padding: 28px 34px !important;
+}
+body.telu-page-tools main > *,
+body.telu-page-tools #main > *,
+body.telu-page-tools #content > * { max-width: 920px !important; }
+body.telu-page-tools pre,
+body.telu-page-tools code { overflow-wrap: anywhere; white-space: pre-wrap; }
+
+body.telu-page-index #new_url form > div {
+    grid-template-columns: max-content minmax(360px, 1fr) max-content minmax(150px, 230px) !important;
+}
+body.telu-page-index #new_url #add-button { grid-column: 2 / 5 !important; }
+
+body.telu-page-index #filter_form {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(300px, 1fr)) auto !important;
+    align-items: start !important;
+    gap: 10px 18px !important;
+}
+body.telu-page-index #filter_form > div { min-width: 0 !important; }
+
+body.telu-public-interface #container,
+body.telu-public-interface > .container,
+body.telu-public-interface #wrap {
+    width: min(1120px, calc(100% - 40px)) !important;
+    margin: 28px auto !important;
+}
+.telu-public-brand {
+    justify-content: space-between;
+    min-height: 104px;
+}
+.telu-public-identity { display: flex; align-items: center; gap: 22px; color: #fff !important; text-decoration: none !important; }
+.telu-public-identity > span { display: flex; flex-direction: column; padding-left: 22px; border-left: 1px solid rgba(255,255,255,.34); }
+.telu-public-identity strong { color: #fff !important; font-size: 32px; line-height: 1.05; }
+.telu-public-identity small { margin-top: 7px; color: rgba(255,255,255,.84); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.telu-public-brand nav { display: flex; align-items: center; gap: 16px; }
+.telu-public-greeting { max-width: 280px; overflow: hidden; color: rgba(255,255,255,.88); text-overflow: ellipsis; white-space: nowrap; }
+.telu-public-greeting b { color: #fff; }
+.telu-dashboard-link { padding: 11px 16px; border: 1px solid rgba(255,255,255,.55); border-radius: 9px; color: #9a191e !important; background: #fff; font-weight: 800; text-decoration: none !important; }
+.telu-dashboard-link:hover { color: #fff !important; background: #302e2e; }
+.telu-public-form-card { margin: 0 0 20px; padding: 28px; border: 1px solid #e5d8d6; border-radius: 16px; background: #fff; box-shadow: 0 12px 32px rgba(69,31,31,.08); }
+.telu-public-form-card form { margin: 0 !important; }
+
+@media (max-width: 900px) {
+    body.telu-professional-theme #wrap { width: calc(100% - 22px) !important; }
+    body.telu-page-index #new_url form > div { grid-template-columns: 1fr !important; }
+    body.telu-page-index #new_url #add-button { grid-column: 1 !important; width: 100% !important; }
+    body.telu-page-index #filter_form { grid-template-columns: 1fr !important; }
+    .telu-public-brand { align-items: flex-start; flex-direction: column; }
+    .telu-public-brand nav { width: 100%; justify-content: space-between; }
+}
+
+@media (max-width: 560px) {
+    .telu-public-identity > span { padding-left: 13px; }
+    .telu-public-identity strong { font-size: 24px; }
+    .telu-public-brand nav { align-items: stretch; flex-direction: column; }
+    .telu-dashboard-link { text-align: center; }
+    .telu-public-form-card { padding: 18px 14px; }
+}
+
+/* 1.3.1 — keep ownership internal while simplifying the URL list. */
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(6),
+body.telu-page-index.telu-role-user #main_table tbody td:nth-child(6) {
+    display: none !important;
+}
+
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(1) { width: 22% !important; }
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(2) { width: 34% !important; }
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(3) { width: 14% !important; }
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(4) { width: 14% !important; }
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(5) { width: 8% !important; }
+body.telu-page-index.telu-role-user #main_table thead th:nth-child(7),
+body.telu-page-index.telu-role-user #main_table thead th.actions { width: 168px !important; min-width: 168px !important; max-width: 168px !important; }
+
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(1) { width: 18% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(2) { width: 28% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(3) { width: 10% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(4) { width: 11% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(5) { width: 7% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(6) { width: 18% !important; }
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(7),
+body.telu-page-index.telu-role-administrator #main_table thead th.actions { width: 168px !important; min-width: 168px !important; max-width: 168px !important; }
+
+body.telu-page-index.telu-role-administrator #main_table thead th:nth-child(6)::after {
+    content: " (email)";
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: none;
+    opacity: .82;
+}
+
+body.telu-page-index.telu-role-administrator #main_table tbody td:nth-child(6) {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+
+body.telu-page-index #main_table tfoot th {
+    padding: 16px 18px !important;
+    color: #302e2e !important;
+    background: #faf8f7 !important;
+}
+
+body.telu-page-index #filter_form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 10px 14px !important;
+    width: 100% !important;
+}
+
+body.telu-page-index #filter_form > div {
+    display: flex !important;
+    flex: 1 1 420px !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+body.telu-page-index #filter_form input[type="text"] { width: 120px !important; }
+body.telu-page-index #filter_form select { width: auto !important; max-width: 160px !important; }
+
+@media (max-width: 700px) {
+    body.telu-page-index #filter_form,
+    body.telu-page-index #filter_form > div { align-items: stretch !important; flex-direction: column !important; }
+    body.telu-page-index #filter_form input[type="text"],
+    body.telu-page-index #filter_form select { width: 100% !important; max-width: none !important; }
+}
+
+/* 1.5.0 — administrator theme settings page. */
+.telu-theme-settings {
+    width: min(760px, 100%);
+    padding: 24px 28px;
+    border: 1px solid var(--telu-border);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: var(--telu-shadow);
+}
+.telu-theme-settings form { margin-top: 22px; }
+.telu-theme-settings form > p { margin: 0 0 18px; }
+.telu-theme-settings input[type="text"] { width: min(100%, 520px); }
+.telu-theme-settings input[type="color"] { width: 74px !important; min-height: 44px; padding: 4px; }
+.telu-theme-settings input[type="checkbox"] { width: auto !important; min-height: 0 !important; margin-right: 7px; }
+
+/* Apply the configurable primary color to the principal branded surfaces. */
+body.telu-professional-theme .telu-brand-header,
+body.telu-public-interface .telu-public-brand {
+    background: linear-gradient(125deg, var(--telu-primary-dark), var(--telu-primary) 68%, var(--telu-primary)) !important;
+}
+body.telu-professional-theme #main_table thead th,
+body.telu-professional-theme #add-button,
+body.telu-professional-theme input.primary,
+body.telu-professional-theme .button.primary,
+body.telu-public-interface button,
+body.telu-public-interface input[type="submit"] {
+    border-color: var(--telu-primary) !important;
+    background-color: var(--telu-primary) !important;
+}
+body.telu-professional-theme a,
+body.telu-public-interface a { color: var(--telu-primary); }
+
+/* 1.5.1 — preserve YOURLS' nested plugin-page navigation. The root menu is a
+   flex row, while every plugin submenu must wrap on its own row below the
+   corresponding top-level item instead of overflowing outside #wrap. */
+body.telu-professional-theme #admin_menu {
+    overflow: visible !important;
+    white-space: normal !important;
+}
+body.telu-professional-theme #admin_menu > li {
+    flex-wrap: wrap !important;
+}
+body.telu-professional-theme #admin_menu > #admin_menu_plugins_link {
+    display: contents !important;
+}
+body.telu-professional-theme #admin_menu > #admin_menu_plugins_link > a {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+body.telu-professional-theme #admin_menu > li > ul {
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 0 100% !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 4px 7px !important;
+    margin: 5px 0 0 !important;
+    padding: 5px 0 0 12px !important;
+    overflow: visible !important;
+    border-top: 1px solid rgba(255,255,255,.12) !important;
+}
+body.telu-professional-theme #admin_menu > #admin_menu_plugins_link > ul {
+    flex-basis: 100% !important;
+    order: 99 !important;
+}
+body.telu-professional-theme #admin_menu > li > ul > li {
+    display: inline-flex !important;
+    flex: 0 1 auto !important;
+    max-width: 100% !important;
+}
+body.telu-professional-theme #admin_menu > li > ul > li > a {
+    display: inline-flex !important;
+    max-width: 100% !important;
+    padding: 6px 9px !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+}
+
+@media (max-width: 760px) {
+    body.telu-professional-theme #admin_menu > li,
+    body.telu-professional-theme #admin_menu > li > ul { width: 100% !important; }
+}
+
+/* 1.5.2 — neutral, readable URL filter footer. */
+body.telu-page-index #main_table tfoot,
+body.telu-page-index #main_table tfoot tr,
+body.telu-page-index #main_table tfoot th,
+body.telu-page-index #main_table tfoot td {
+    color: #3f454a !important;
+    background: #f7f8f9 !important;
+}
+body.telu-page-index #main_table tfoot th {
+    padding: 18px !important;
+    border-top: 1px solid #dde4e7 !important;
+}
+body.telu-page-index #main_table #filter_form {
+    padding: 0 !important;
+    color: #3f454a !important;
+}
+body.telu-page-index #main_table #filter_form label,
+body.telu-page-index #main_table #filter_form span {
+    color: #3f454a !important;
+}
+body.telu-page-index #main_table #filter_form input,
+body.telu-page-index #main_table #filter_form select {
+    border-color: #cbd7dc !important;
+    color: #30363a !important;
+    background-color: #fff !important;
+}
+body.telu-page-index #main_table #filter_form input[type="submit"] {
+    border-color: var(--telu-primary) !important;
+    color: #fff !important;
+    background-color: var(--telu-primary) !important;
+}
+body.telu-page-index #main_table #filter_form input[type="button"] {
+    border-color: #c9d3d8 !important;
+    color: #4a5358 !important;
+    background-color: #fff !important;
+}
+
+/* 1.3.2 — preserve the proven inline layout of the legacy add-URL form. */
+body.telu-page-index #new_url form > div {
+    display: block !important;
+    line-height: 52px !important;
+    text-align: center !important;
+}
+body.telu-page-index #new_url #add-url {
+    width: min(58%, 650px) !important;
+    margin: 0 10px !important;
+    vertical-align: middle !important;
+}
+body.telu-page-index #new_url #add-keyword {
+    width: min(20%, 230px) !important;
+    margin: 0 10px !important;
+    vertical-align: middle !important;
+}
+body.telu-page-index #new_url #add-button {
+    display: block !important;
+    min-width: 160px !important;
+    margin: 12px auto 0 !important;
+}
+
+@media (max-width: 820px) {
+    body.telu-page-index #new_url form > div { line-height: 1.5 !important; text-align: left !important; }
+    body.telu-page-index #new_url #add-url,
+    body.telu-page-index #new_url #add-keyword { display: block !important; width: 100% !important; margin: 8px 0 14px !important; }
+    body.telu-page-index #new_url #add-button { width: 100% !important; }
+}
+
+/* 1.3.4 — centered institutional navigation on the public homepage. */
+body.telu-public-interface .telu-public-brand {
+    display: flex !important;
+    width: min(900px, calc(100% - 32px)) !important;
+    min-height: 104px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 24px !important;
+    margin: 24px auto 20px !important;
+    padding: 18px 24px !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: linear-gradient(120deg, #8f171c, #b72025 65%, #d83238) !important;
+    box-shadow: 0 16px 36px rgba(106,23,26,.18) !important;
+}
+body.telu-public-interface .telu-public-identity {
+    display: flex !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+body.telu-public-interface .telu-public-identity img {
+    display: block !important;
+    width: 148px !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    padding: 9px 13px !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+}
+body.telu-public-interface .telu-public-identity > span {
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 2px 0 2px 20px !important;
+    border-left: 1px solid rgba(255,255,255,.38) !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+body.telu-public-interface .telu-public-identity strong {
+    color: #fff !important;
+    font-size: 30px !important;
+    line-height: 1.05 !important;
+}
+body.telu-public-interface .telu-public-identity small {
+    margin-top: 7px !important;
+    color: rgba(255,255,255,.84) !important;
+    font-size: 11px !important;
+    font-weight: 750 !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+}
+body.telu-public-interface .telu-public-brand nav {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 14px !important;
+}
+body.telu-public-interface .telu-public-greeting {
+    max-width: 230px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    color: rgba(255,255,255,.88) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: normal !important;
+    text-overflow: ellipsis !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+}
+body.telu-public-interface .telu-dashboard-link {
+    display: inline-flex !important;
+    min-height: 42px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 9px 15px !important;
+    border: 1px solid rgba(255,255,255,.6) !important;
+    border-radius: 9px !important;
+    color: #95191e !important;
+    background: #fff !important;
+    box-shadow: 0 6px 15px rgba(57,13,15,.13) !important;
+}
+body.telu-public-interface .telu-public-form-card,
+body.telu-public-interface #container > section:not(.telu-public-brand),
+body.telu-public-interface > .container > section:not(.telu-public-brand) {
+    width: min(900px, 100%) !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+
+@media (max-width: 760px) {
+    body.telu-public-interface .telu-public-brand { align-items: stretch !important; flex-direction: column !important; padding: 16px !important; }
+    body.telu-public-interface .telu-public-brand nav { width: 100% !important; justify-content: space-between !important; }
+}
+
+@media (max-width: 520px) {
+    body.telu-public-interface .telu-public-identity img { width: 120px !important; }
+    body.telu-public-interface .telu-public-identity strong { font-size: 24px !important; }
+    body.telu-public-interface .telu-public-brand nav { align-items: stretch !important; flex-direction: column !important; }
+    body.telu-public-interface .telu-public-greeting { max-width: 100% !important; text-align: center !important; }
+}
+
+/* 1.3.5 — balanced create form and post-create result panels. */
+body.telu-professional-theme #new_url,
+body.telu-page-index #new_url,
+#new_url {
+    background: #ffffff !important;
+    border: 1.5px solid #fed7aa !important;
+    border-radius: 16px !important;
+    padding: 24px 28px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    margin: 20px auto 26px !important;
+    width: 100% !important;
+    max-width: 1180px !important;
+    box-sizing: border-box !important;
+}
+
+body.telu-professional-theme #new_url form,
+body.telu-page-index #new_url form {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.telu-professional-theme #new_url form > div,
+body.telu-page-index #new_url form > div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px 12px !important;
+    width: 100% !important;
+    white-space: normal !important;
+    font-size: 14px !important;
+}
+
+body.telu-professional-theme #new_url form > div label,
+body.telu-professional-theme #new_url form > div strong,
+body.telu-page-index #new_url form > div label,
+body.telu-page-index #new_url form > div strong {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+body.telu-professional-theme #new_url #add-url,
+body.telu-page-index #new_url #add-url {
+    flex: 2 1 360px !important;
+    min-width: 240px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+body.telu-professional-theme #new_url #add-url:focus,
+body.telu-page-index #new_url #add-url:focus {
+    background: #ffffff !important;
+    border-color: #b72025 !important;
+    box-shadow: 0 0 0 3px rgba(183, 32, 37, 0.12) !important;
+    outline: none !important;
+}
+
+body.telu-professional-theme #new_url #add-keyword,
+body.telu-page-index #new_url #add-keyword {
+    flex: 1 1 160px !important;
+    min-width: 140px !important;
+    max-width: 220px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+body.telu-professional-theme #new_url #add-keyword:focus,
+body.telu-page-index #new_url #add-keyword:focus {
+    background: #ffffff !important;
+    border-color: #b72025 !important;
+    box-shadow: 0 0 0 3px rgba(183, 32, 37, 0.12) !important;
+    outline: none !important;
+}
+
+body.telu-professional-theme #new_url #add-button,
+body.telu-page-index #new_url #add-button {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 24px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    background: #b72025 !important;
+    color: #ffffff !important;
+    border: 1.5px solid #b72025 !important;
+    box-shadow: 0 3px 12px rgba(183, 32, 37, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+body.telu-professional-theme #new_url #add-button:hover,
+body.telu-page-index #new_url #add-button:hover {
+    background: #95191e !important;
+    border-color: #95191e !important;
+    box-shadow: 0 5px 16px rgba(149, 25, 30, 0.42) !important;
+    transform: translateY(-1px) !important;
+}
+
+@media (max-width: 780px) {
+    body.telu-professional-theme #new_url form > div,
+    body.telu-page-index #new_url form > div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    body.telu-professional-theme #new_url #add-url,
+    body.telu-page-index #new_url #add-url,
+    body.telu-professional-theme #new_url #add-keyword,
+    body.telu-page-index #new_url #add-keyword,
+    body.telu-professional-theme #new_url #add-button,
+    body.telu-page-index #new_url #add-button {
+        width: 100% !important;
+        max-width: none !important;
+    }
+}
+
+body.telu-page-index #shareboxes {
+    display: grid !important;
+    clear: both !important;
+    width: 100% !important;
+    grid-template-columns: minmax(260px, .8fr) minmax(420px, 1.7fr) !important;
+    gap: 14px !important;
+    margin: 18px 0 !important;
+    padding: 0 !important;
+}
+body.telu-page-index #shareboxes.telu-empty-shareboxes {
+    display: none !important;
+}
+body.telu-page-index #shareboxes .share,
+body.telu-page-index #copybox,
+body.telu-page-index #sharebox {
+    display: block !important;
+    float: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 160px !important;
+    margin: 0 !important;
+    padding: 18px !important;
+    overflow: hidden !important;
+    border: 1px solid #e1d6d4 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 7px 20px rgba(55,25,26,.06) !important;
+}
+body.telu-page-index #shareboxes h2 {
+    margin: 0 0 14px !important;
+    color: #302e2e !important;
+    font-size: 20px !important;
+}
+body.telu-page-index #copylink,
+body.telu-page-index #sharebox textarea,
+body.telu-page-index #tweet textarea {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    margin: 6px 0 !important;
+}
+body.telu-page-index #origlink,
+body.telu-page-index #statlink {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+body.telu-page-index #shareboxes::after { display: none !important; content: none !important; }
+
+@media (max-width: 980px) {
+    body.telu-page-index #new_url form > div { white-space: normal !important; }
+    body.telu-page-index #new_url form > div strong,
+    body.telu-page-index #new_url form > div label { display: block !important; margin: 9px 0 5px !important; }
+    body.telu-page-index #new_url #add-url,
+    body.telu-page-index #new_url #add-keyword { width: 100% !important; max-width: none !important; margin: 0 0 10px !important; }
+    body.telu-page-index #shareboxes { grid-template-columns: 1fr !important; }
+}
+
+/* 1.3.6 — dedicated branded result page. */
+body.telu-public-result #container,
+body.telu-public-result > .container,
+body.telu-public-result #wrap {
+    width: min(900px, calc(100% - 32px)) !important;
+}
+body.telu-public-result main,
+body.telu-public-result .content,
+body.telu-public-result #content,
+body.telu-public-result .panel {
+    width: 100% !important;
+    padding: 30px !important;
+    border: 1px solid #e3d8d6 !important;
+    border-radius: 16px !important;
+    background: #fff !important;
+    box-shadow: 0 14px 38px rgba(69,31,31,.09) !important;
+}
+body.telu-public-result h1,
+body.telu-public-result h2,
+body.telu-public-result h3 { color: #302e2e !important; }
+body.telu-public-result h1::after,
+body.telu-public-result h2:first-child::after {
+    display: block;
+    width: 48px;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background: #b72025;
+    content: "";
+}
+body.telu-public-result input[type="text"],
+body.telu-public-result input[type="url"] {
+    min-height: 48px !important;
+    border-color: #ddcfcd !important;
+    background: #fcfbfa !important;
+}
+body.telu-public-result button,
+body.telu-public-result .button,
+body.telu-public-result input[type="button"] {
+    min-width: 46px !important;
+    min-height: 46px !important;
+    border-color: #b72025 !important;
+    color: #95191e !important;
+    background: #fff !important;
+}
+body.telu-public-result button:hover,
+body.telu-public-result .button:hover,
+body.telu-public-result input[type="button"]:hover {
+    color: #fff !important;
+    background: #b72025 !important;
+}
+body.telu-public-result img[src*="qr"],
+body.telu-public-result img[alt*="QR" i] {
+    max-width: 270px !important;
+    height: auto !important;
+    padding: 12px !important;
+    border: 1px solid #eadfdd !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(55,25,26,.08) !important;
+}
+body.telu-public-result a { color: #a51c21 !important; }
+
+@media (max-width: 640px) {
+    body.telu-public-result main,
+    body.telu-public-result .content,
+    body.telu-public-result #content,
+    body.telu-public-result .panel { padding: 20px 15px !important; }
+}
+
+/* 1.3.7 — let legacy Quick Share content define the panel height. */
+body.telu-page-index #shareboxes {
+    align-items: stretch !important;
+    overflow: visible !important;
+}
+body.telu-page-index #shareboxes .share,
+body.telu-page-index #copybox,
+body.telu-page-index #sharebox {
+    display: flow-root !important;
+    height: auto !important;
+    min-height: 210px !important;
+    overflow: visible !important;
+}
+body.telu-page-index #shareboxes .share::after,
+body.telu-page-index #copybox::after,
+body.telu-page-index #sharebox::after {
+    display: block !important;
+    clear: both !important;
+    width: 100% !important;
+    height: 0 !important;
+    content: "" !important;
+}
+body.telu-page-index #sharebox #tweet,
+body.telu-page-index #sharebox .share-links,
+body.telu-page-index #sharebox p {
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+body.telu-page-index #main_table {
+    clear: both !important;
+}
+
+/* 1.3.8 — visible branded social-share buttons on result.php. */
+body.telu-public-result a[href*="twitter.com"],
+body.telu-public-result a[href*="x.com/intent"],
+body.telu-public-result a[href*="facebook.com"],
+body.telu-public-result a[href*="tumblr.com"],
+body.telu-public-result a[href*="linkedin.com"],
+body.telu-public-result a[title*="Twitter" i],
+body.telu-public-result a[title*="Facebook" i],
+body.telu-public-result a[title*="Tumblr" i],
+body.telu-public-result a[title*="LinkedIn" i] {
+    display: inline-flex !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 4px 8px 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid #a91c21 !important;
+    border-radius: 9px !important;
+    color: #fff !important;
+    background: linear-gradient(135deg, #a3191f, #cf3036) !important;
+    box-shadow: 0 7px 16px rgba(126,22,26,.16) !important;
+    text-decoration: none !important;
+}
+body.telu-public-result a[href*="twitter.com"] *,
+body.telu-public-result a[href*="x.com/intent"] *,
+body.telu-public-result a[href*="facebook.com"] *,
+body.telu-public-result a[href*="tumblr.com"] *,
+body.telu-public-result a[href*="linkedin.com"] *,
+body.telu-public-result a[title*="Twitter" i] *,
+body.telu-public-result a[title*="Facebook" i] *,
+body.telu-public-result a[title*="Tumblr" i] *,
+body.telu-public-result a[title*="LinkedIn" i] * {
+    color: #fff !important;
+    fill: #fff !important;
+}
+body.telu-public-result a[href*="twitter.com"]:hover,
+body.telu-public-result a[href*="x.com/intent"]:hover,
+body.telu-public-result a[href*="facebook.com"]:hover,
+body.telu-public-result a[href*="tumblr.com"]:hover,
+body.telu-public-result a[href*="linkedin.com"]:hover,
+body.telu-public-result a[title*="Twitter" i]:hover,
+body.telu-public-result a[title*="Facebook" i]:hover,
+body.telu-public-result a[title*="Tumblr" i]:hover,
+body.telu-public-result a[title*="LinkedIn" i]:hover {
+    border-color: #7f1418 !important;
+    color: #fff !important;
+    background: #7f1418 !important;
+    transform: translateY(-1px);
+}
+body.telu-public-result a[href*="twitter.com"]:focus-visible,
+body.telu-public-result a[href*="x.com/intent"]:focus-visible,
+body.telu-public-result a[href*="facebook.com"]:focus-visible,
+body.telu-public-result a[href*="tumblr.com"]:focus-visible,
+body.telu-public-result a[href*="linkedin.com"]:focus-visible {
+    outline: 3px solid rgba(183,32,37,.25) !important;
+    outline-offset: 3px !important;
+}
+
+/* 1.3.9 — accessible Telkom University delete confirmation dialog. */
+body.telu-professional-theme dialog#delete-confirm-dialog {
+    width: min(620px, calc(100% - 28px)) !important;
+    max-width: 620px !important;
+    max-height: calc(100vh - 40px) !important;
+    margin: auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 2px solid #b72025 !important;
+    border-radius: 16px !important;
+    color: #302e2e !important;
+    background: #fff !important;
+    box-shadow: 0 26px 80px rgba(35,14,15,.32) !important;
+}
+body.telu-professional-theme dialog#delete-confirm-dialog::backdrop {
+    background: rgba(29,25,25,.58) !important;
+    backdrop-filter: blur(2px);
+}
+body.telu-professional-theme #delete-confirm-dialog [name="dialog_title"] {
+    margin: 0 !important;
+    padding: 17px 22px !important;
+    color: #fff !important;
+    background: linear-gradient(105deg, #94181d, #c9282e) !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    text-align: left !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .confirm-message {
+    max-height: min(52vh, 360px) !important;
+    padding: 20px 24px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .confirm-message p {
+    margin: 0 0 12px !important;
+    color: #302e2e !important;
+    font-size: 15px !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .confirm-message ul {
+    margin: 0 !important;
+    padding: 14px 16px 14px 34px !important;
+    border-left: 4px solid #b72025 !important;
+    border-radius: 8px !important;
+    background: #fff6f5 !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .confirm-message li,
+body.telu-professional-theme #delete-confirm-dialog .confirm-message span {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .button-group {
+    position: static !important;
+    display: flex !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 14px 22px 18px !important;
+    border-top: 1px solid #eadfdd !important;
+    background: #faf7f6 !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .button-group .button {
+    min-width: 92px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+}
+body.telu-professional-theme #delete-confirm-dialog .button-group .primary {
+    border-color: #b72025 !important;
+    color: #fff !important;
+    background: #b72025 !important;
+}
+
+@media (max-width: 520px) {
+    body.telu-professional-theme #delete-confirm-dialog [name="dialog_title"] { padding: 15px 17px !important; font-size: 18px !important; }
+    body.telu-professional-theme #delete-confirm-dialog .confirm-message { padding: 17px !important; }
+    body.telu-professional-theme #delete-confirm-dialog .button-group { padding: 12px 17px 16px !important; }
+    body.telu-professional-theme #delete-confirm-dialog .button-group .button { flex: 1 1 0 !important; }
+}
+
+/* 1.4.0 — frontend-independent social button marker. */
+body.telu-public-result a.telu-social-button {
+    display: inline-flex !important;
+    width: 74px !important;
+    min-width: 74px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 4px 8px 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid #a91c21 !important;
+    border-radius: 9px !important;
+    color: #fff !important;
+    background-color: #bd252b !important;
+    box-shadow: 0 7px 16px rgba(126,22,26,.16) !important;
+    background-blend-mode: normal !important;
+    text-decoration: none !important;
+}
+body.telu-public-result a.telu-social-button,
+body.telu-public-result a.telu-social-button::before,
+body.telu-public-result a.telu-social-button::after,
+body.telu-public-result a.telu-social-button * {
+    color: #fff !important;
+    fill: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+body.telu-public-result a.telu-social-button:hover,
+body.telu-public-result a.telu-social-button:focus {
+    border-color: #7f1418 !important;
+    color: #fff !important;
+    background-color: #7f1418 !important;
+}
+
+/* 1.4.1 — actual markup uses clickable spans, not anchors. */
+body.telu-public-result .social-sharing span.button.social-button,
+body.telu-public-result .social-sharing .social-button,
+body.telu-public-result span.button.social-button.twitter,
+body.telu-public-result span.button.social-button.facebook,
+body.telu-public-result span.button.social-button.tumblr,
+body.telu-public-result span.button.social-button.linkedin {
+    border-color: #a91c21 !important;
+    color: #fff !important;
+    background-color: #bd252b !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+body.telu-public-result .social-sharing span.button.social-button:hover,
+body.telu-public-result .social-sharing span.button.social-button:focus,
+body.telu-public-result span.button.social-button:hover,
+body.telu-public-result span.button.social-button:focus {
+    border-color: #7f1418 !important;
+    color: #fff !important;
+    background-color: #7f1418 !important;
+}
+body.telu-public-result .social-sharing span.button.social-button *,
+body.telu-public-result span.button.social-button * {
+    color: #fff !important;
+    fill: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 1.4.3 — Modern & Balanced Filter & Search Card (#filter_form) */
+body.telu-professional-theme #main_table tfoot,
+body.telu-page-index #main_table tfoot {
+    background: transparent !important;
+}
+
+body.telu-professional-theme #main_table tfoot tr,
+body.telu-page-index #main_table tfoot tr {
+    background: transparent !important;
+    display: table-row !important;
+}
+
+body.telu-professional-theme #main_table tfoot th,
+body.telu-page-index #main_table tfoot th {
+    display: table-cell !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-top: none !important;
+    border-radius: 0 0 14px 14px !important;
+    padding: 20px 24px !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Pagination Section */
+body.telu-professional-theme #main_table #pagination,
+body.telu-page-index #main_table #pagination,
+body.telu-professional-theme #pagination,
+#pagination {
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 10px 14px !important;
+    margin: 0 0 18px 0 !important;
+    padding: 0 0 14px 0 !important;
+    border-bottom: 1.5px solid #f1f5f9 !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+body.telu-professional-theme #pagination .navigation,
+body.telu-page-index #pagination .navigation {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+    color: #475569 !important;
+    width: 100% !important;
+}
+
+body.telu-professional-theme #pagination .nav_total,
+body.telu-page-index #pagination .nav_total {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-right: 10px !important;
+    padding: 4px 10px !important;
+    background: #f1f5f9 !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+body.telu-professional-theme #pagination a,
+body.telu-professional-theme #pagination .nav_link a,
+body.telu-professional-theme #pagination .nav_current,
+body.telu-page-index #pagination a,
+body.telu-page-index #pagination .nav_link a,
+body.telu-page-index #pagination .nav_current {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 9px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    border-radius: 7px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    color: #334155 !important;
+    box-sizing: border-box !important;
+    transition: all 0.15s ease !important;
+}
+
+body.telu-professional-theme #pagination a:hover,
+body.telu-page-index #pagination a:hover {
+    color: #b72025 !important;
+    border-color: #fca5a5 !important;
+    background: #fef2f2 !important;
+}
+
+body.telu-professional-theme #pagination .nav_current,
+body.telu-page-index #pagination .nav_current {
+    background: #b72025 !important;
+    color: #ffffff !important;
+    border-color: #b72025 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 6px rgba(183, 32, 37, 0.25) !important;
+}
+
+/* Filter Form Container */
+body.telu-professional-theme #main_table #filter_form,
+body.telu-page-index #main_table #filter_form,
+body.telu-professional-theme #filter_form,
+#filter_form {
+    float: none !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    color: #334155 !important;
+    font-size: 13.5px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.telu-professional-theme #filter_form form,
+body.telu-page-index #filter_form form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 14px 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Criteria Section (Baris kriteria pencarian & filter) */
+body.telu-professional-theme #filter_form #filter_options,
+body.telu-page-index #filter_form #filter_options,
+body.telu-professional-theme #main_table #filter_form > div:first-child,
+body.telu-page-index #main_table #filter_form > div:first-child,
+body.telu-professional-theme #filter_form > div:first-child {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    gap: 10px 10px !important;
+    line-height: 2 !important;
+    flex: 1 1 650px !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+}
+
+/* Input teks & Select dalam form filter */
+body.telu-professional-theme #filter_form input[type="text"],
+body.telu-page-index #filter_form input[type="text"],
+body.telu-professional-theme #filter_form select,
+body.telu-page-index #filter_form select {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 6px 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    font-size: 13px !important;
+    color: #0f172a !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    vertical-align: middle !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.telu-professional-theme #filter_form input[type="text"]:focus,
+body.telu-page-index #filter_form input[type="text"]:focus,
+body.telu-professional-theme #filter_form select:focus,
+body.telu-page-index #filter_form select:focus {
+    background: #ffffff !important;
+    border-color: #b72025 !important;
+    box-shadow: 0 0 0 3px rgba(183, 32, 37, 0.12) !important;
+}
+
+/* Input Keyword Utama */
+body.telu-professional-theme #filter_form #filter_keyword,
+body.telu-page-index #filter_form #filter_keyword,
+body.telu-professional-theme #filter_form input[name="search"],
+body.telu-page-index #filter_form input[name="search"] {
+    min-width: 160px !important;
+    width: 180px !important;
+}
+
+/* Input Limit (Jumlah Baris) */
+body.telu-professional-theme #filter_form #filter_limit,
+body.telu-page-index #filter_form #filter_limit {
+    width: 60px !important;
+    text-align: center !important;
+}
+
+/* Actions Section (Tombol Search & Clear di baris bawah atau samping) */
+body.telu-professional-theme #filter_form #filter_buttons,
+body.telu-page-index #filter_form #filter_buttons,
+body.telu-professional-theme #main_table #filter_form > div:last-child,
+body.telu-page-index #main_table #filter_form > div:last-child,
+body.telu-professional-theme #filter_form > div:last-child {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    margin-left: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Tombol Cari (Search) */
+body.telu-professional-theme #filter_form input#submit_sort,
+body.telu-page-index #filter_form input#submit_sort,
+body.telu-professional-theme #filter_form input#submit-sort,
+body.telu-page-index #filter_form input#submit-sort,
+body.telu-professional-theme #filter_form input[type="submit"],
+body.telu-page-index #filter_form input[type="submit"] {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 22px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    background: #b72025 !important;
+    color: #ffffff !important;
+    border: 1.5px solid #b72025 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(183, 32, 37, 0.28) !important;
+    transition: all 0.2s ease !important;
+}
+
+body.telu-professional-theme #filter_form input#submit_sort:hover,
+body.telu-page-index #filter_form input#submit_sort:hover,
+body.telu-professional-theme #filter_form input#submit-sort:hover,
+body.telu-page-index #filter_form input#submit-sort:hover,
+body.telu-professional-theme #filter_form input[type="submit"]:hover,
+body.telu-page-index #filter_form input[type="submit"]:hover {
+    background: #95191e !important;
+    border-color: #95191e !important;
+    box-shadow: 0 4px 12px rgba(149, 25, 30, 0.38) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Tombol Bersihkan (Clear) */
+body.telu-professional-theme #filter_form input#submit_clear,
+body.telu-page-index #filter_form input#submit_clear,
+body.telu-professional-theme #filter_form input#submit-clear-filter,
+body.telu-page-index #filter_form input#submit-clear-filter,
+body.telu-professional-theme #filter_form input[type="button"],
+body.telu-page-index #filter_form input[type="button"] {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 20px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
+}
+
+body.telu-professional-theme #filter_form input#submit_clear:hover,
+body.telu-page-index #filter_form input#submit_clear:hover,
+body.telu-professional-theme #filter_form input#submit-clear-filter:hover,
+body.telu-page-index #filter_form input#submit-clear-filter:hover,
+body.telu-professional-theme #filter_form input[type="button"]:hover,
+body.telu-page-index #filter_form input[type="button"]:hover {
+    background: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Final override: configurable color must win over every legacy rule above. */
+body.telu-professional-theme .telu-brand-header,
+body.telu-public-interface .telu-public-brand {
+    background: linear-gradient(125deg, var(--telu-primary-dark), var(--telu-primary) 68%, var(--telu-primary)) !important;
+}
+body.telu-professional-theme #main_table thead th,
+body.telu-professional-theme #add-button,
+body.telu-professional-theme input.primary,
+body.telu-professional-theme .button.primary,
+body.telu-public-interface button,
+body.telu-public-interface input[type="submit"],
+body.telu-professional-theme #delete-confirm-dialog .button-group .primary {
+    border-color: var(--telu-primary) !important;
+    background-color: var(--telu-primary) !important;
+}
+body.telu-professional-theme a,
+body.telu-public-interface a,
+body.telu-public-result a { color: var(--telu-primary) !important; }
+body.telu-professional-theme input:focus,
+body.telu-public-interface input:focus,
+body.telu-public-interface textarea:focus {
+    border-color: var(--telu-primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--telu-primary) 15%, transparent) !important;
+}
+
+/* Sembunyikan notifikasi update versi YOURLS untuk user biasa (hanya tampil untuk Super Admin) */
+body.telu-role-user .notice:has(a[href*="yourls.org"]),
+body.telu-role-user div.notice:has(a[href*="yourls.org"]),
+body.telu-role-user .notice a[href*="yourls.org"],
+body.telu-role-user .notice-update-core {
+    display: none !important;
+}
+
+/* Sembunyikan bagian Bookmarklet sepenuhnya dari antarmuka */
+.bookmarklet,
+#bookmarklet,
+.bookmarklets,
+#bookmarklets,
+a.bookmarklet,
+.bookmarklet-box,
+#bookmarklet-box,
+a[href*="javascript:(function()"],
+a[href*="bookmarklet"],
+div:has(> a[href*="javascript:"]),
+p:has(> a[href*="javascript:"]),
+div:has(> a.bookmarklet),
+p:has(> a.bookmarklet),
+section:has(a.bookmarklet),
+div:has(#bookmarklet),
+section:has(#bookmarklet) {
+    display: none !important;
+}
+
+/* Responsif & Perapihan Antarmuka Publik (Mobile / Tablet / Desktop) */
+body.telu-public-interface #container,
+body.telu-public-interface > .container,
+body.telu-public-interface #wrap {
+    width: min(920px, calc(100% - 28px)) !important;
+    margin: 24px auto !important;
+}
+
+body.telu-public-interface .telu-public-form-card {
+    width: 100% !important;
+    max-width: 920px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto 20px !important;
+    padding: 28px 32px !important;
+    border-radius: 16px !important;
+}
+
+body.telu-public-interface .telu-public-form-card form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+}
+
+body.telu-public-interface .telu-public-form-card form p {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+body.telu-public-interface .telu-public-form-card label {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+}
+
+body.telu-public-interface .telu-public-form-card input[type="text"],
+body.telu-public-interface .telu-public-form-card input[type="url"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    color: #1e293b !important;
+    background: #f8fafc !important;
+    box-sizing: border-box !important;
+    transition: border-color .15s, box-shadow .15s, background .15s !important;
+}
+
+body.telu-public-interface .telu-public-form-card input[type="text"]:focus,
+body.telu-public-interface .telu-public-form-card input[type="url"]:focus {
+    background: #fff !important;
+    border-color: var(--telu-primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--telu-primary) 15%, transparent) !important;
+}
+
+body.telu-public-interface .telu-public-form-card input[type="submit"],
+body.telu-public-interface .telu-public-form-card button[type="submit"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 24px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(183, 32, 37, .25) !important;
+    transition: transform .15s, background .15s, box-shadow .15s !important;
+}
+
+body.telu-public-interface .telu-public-form-card input[type="submit"]:hover,
+body.telu-public-interface .telu-public-form-card button[type="submit"]:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(183, 32, 37, .32) !important;
+}
+
+@media (max-width: 640px) {
+    body.telu-public-interface #container,
+    body.telu-public-interface > .container,
+    body.telu-public-interface #wrap {
+        width: calc(100% - 20px) !important;
+        margin: 12px auto !important;
+    }
+    body.telu-public-interface .telu-public-brand {
+        padding: 14px 16px !important;
+        gap: 12px !important;
+        border-radius: 14px !important;
+    }
+    body.telu-public-interface .telu-public-form-card {
+        padding: 18px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+    }
+    body.telu-public-interface footer,
+    body.telu-public-interface #footer {
+        padding: 14px 10px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+}
+
+/* Responsif Admin Dashboard Table & Viewport Mobile */
+@media (max-width: 820px) {
+    body.telu-professional-theme #wrap {
+        width: calc(100% - 16px) !important;
+        margin: 12px auto !important;
+        padding: 10px 8px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    body.telu-professional-theme #main_table {
+        min-width: 680px !important;
+    }
+    body.telu-professional-theme #admin_menu {
+        padding: 8px 10px !important;
+    }
+    body.telu-professional-theme #admin_menu a {
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Styling Tombol Logout di Navbar Publik */
+body.telu-public-interface .telu-logout-link,
+body.telu-professional-theme .telu-logout-link,
+.telu-logout-link {
+    display: inline-flex !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 16px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+    border-radius: 9px !important;
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: .02em !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(4px) !important;
+    box-sizing: border-box !important;
+    transition: all .2s ease !important;
+}
+body.telu-public-interface .telu-logout-link span,
+body.telu-professional-theme .telu-logout-link span,
+.telu-logout-link span {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: .03em !important;
+    text-transform: uppercase !important;
+    transition: color .2s ease !important;
+}
+body.telu-public-interface .telu-logout-link svg,
+body.telu-professional-theme .telu-logout-link svg,
+.telu-logout-link svg {
+    stroke: #ffffff !important;
+    width: 15px !important;
+    height: 15px !important;
+    flex-shrink: 0 !important;
+    transition: stroke .2s ease, transform .2s ease !important;
+}
+body.telu-public-interface .telu-logout-link:hover,
+body.telu-professional-theme .telu-logout-link:hover,
+.telu-logout-link:hover {
+    background: #ffffff !important;
+    color: #b72025 !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+    transform: translateY(-1px) !important;
+}
+body.telu-public-interface .telu-logout-link:hover span,
+body.telu-professional-theme .telu-logout-link:hover span,
+.telu-logout-link:hover span {
+    color: #b72025 !important;
+}
+body.telu-public-interface .telu-logout-link:hover svg,
+body.telu-professional-theme .telu-logout-link:hover svg,
+.telu-logout-link:hover svg {
+    stroke: #b72025 !important;
+    transform: translateX(2px) !important;
+}
+
+/* Styling Tombol Salin, Kunjungi, dan QR Code (High Contrast & Clear Hierarchy) */
+body.telu-public-interface .telu-action-group,
+body.telu-public-result .telu-action-group,
+body.telu-professional-theme .telu-action-group,
+.telu-action-group {
+    margin: 16px 0 20px !important;
+    width: 100% !important;
+    clear: both !important;
+}
+
+body.telu-public-interface .telu-copy-row,
+body.telu-public-result .telu-copy-row,
+body.telu-professional-theme .telu-copy-row,
+.telu-copy-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    align-items: center !important;
+}
+
+/* Base style for all action buttons */
+body.telu-public-interface .telu-btn-copy,
+body.telu-public-interface .telu-btn-visit,
+body.telu-public-interface .telu-btn-toggle-qr,
+body.telu-public-result .telu-btn-copy,
+body.telu-public-result .telu-btn-visit,
+body.telu-public-result .telu-btn-toggle-qr,
+body.telu-professional-theme .telu-btn-copy,
+body.telu-professional-theme .telu-btn-visit,
+body.telu-professional-theme .telu-btn-toggle-qr,
+.telu-btn-copy,
+.telu-btn-visit,
+.telu-btn-toggle-qr {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 42px !important;
+    padding: 9px 18px !important;
+    border-radius: 9px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: .01em !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    transition: all .2s ease !important;
+}
+
+/* 1. TOMBOL SALIN TAUTAN (Primary Action - Solid Merah Telkom, Teks Putih Tajam & Jelas) */
+body.telu-public-interface .telu-btn-copy,
+body.telu-public-result .telu-btn-copy,
+body.telu-professional-theme .telu-btn-copy,
+.telu-btn-copy {
+    background: #b72025 !important;
+    color: #ffffff !important;
+    border: 1.5px solid #b72025 !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    min-height: 44px !important;
+    padding: 10px 22px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 14px rgba(183, 32, 37, 0.35) !important;
+    gap: 9px !important;
+}
+body.telu-public-interface .telu-btn-copy svg,
+body.telu-public-result .telu-btn-copy svg,
+body.telu-professional-theme .telu-btn-copy svg,
+.telu-btn-copy svg {
+    stroke: #ffffff !important;
+    width: 17px !important;
+    height: 17px !important;
+    flex-shrink: 0 !important;
+}
+body.telu-public-interface .telu-btn-copy:hover,
+body.telu-public-result .telu-btn-copy:hover,
+body.telu-professional-theme .telu-btn-copy:hover,
+.telu-btn-copy:hover {
+    background: #95191e !important;
+    border-color: #95191e !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(149, 25, 30, 0.45) !important;
+    transform: translateY(-2px) !important;
+}
+body.telu-public-interface .telu-btn-copy.telu-copied,
+body.telu-public-result .telu-btn-copy.telu-copied,
+body.telu-professional-theme .telu-btn-copy.telu-copied,
+.telu-btn-copy.telu-copied {
+    background: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4) !important;
+}
+body.telu-public-interface .telu-btn-copy.telu-copied svg,
+body.telu-public-result .telu-btn-copy.telu-copied svg,
+.telu-btn-copy.telu-copied svg {
+    stroke: #ffffff !important;
+}
+
+/* 2. TOMBOL BUKA TAUTAN (Secondary Action - Background Putih, Teks Gelap Tegas) */
+body.telu-public-interface .telu-btn-visit,
+body.telu-public-result .telu-btn-visit,
+body.telu-professional-theme .telu-btn-visit,
+.telu-btn-visit {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+body.telu-public-interface .telu-btn-visit svg,
+body.telu-public-result .telu-btn-visit svg,
+body.telu-professional-theme .telu-btn-visit svg,
+.telu-btn-visit svg {
+    stroke: #475569 !important;
+    flex-shrink: 0 !important;
+    transition: stroke .2s ease !important;
+}
+body.telu-public-interface .telu-btn-visit:hover,
+body.telu-public-result .telu-btn-visit:hover,
+body.telu-professional-theme .telu-btn-visit:hover,
+.telu-btn-visit:hover {
+    background: #f8fafc !important;
+    border-color: #b72025 !important;
+    color: #b72025 !important;
+    box-shadow: 0 4px 12px rgba(183, 32, 37, 0.12) !important;
+    transform: translateY(-1px) !important;
+}
+body.telu-public-interface .telu-btn-visit:hover svg,
+body.telu-public-result .telu-btn-visit:hover svg,
+.telu-btn-visit:hover svg {
+    stroke: #b72025 !important;
+}
+
+/* 3. TOMBOL QR CODE (Toggle Action - Background Putih / Hover & Active Merah Telkom) */
+body.telu-public-interface .telu-btn-toggle-qr,
+body.telu-public-result .telu-btn-toggle-qr,
+body.telu-professional-theme .telu-btn-toggle-qr,
+.telu-btn-toggle-qr {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+body.telu-public-interface .telu-btn-toggle-qr svg,
+body.telu-public-result .telu-btn-toggle-qr svg,
+body.telu-professional-theme .telu-btn-toggle-qr svg,
+.telu-btn-toggle-qr svg {
+    stroke: #475569 !important;
+    flex-shrink: 0 !important;
+    transition: stroke .2s ease !important;
+}
+body.telu-public-interface .telu-btn-toggle-qr:hover,
+body.telu-public-result .telu-btn-toggle-qr:hover,
+body.telu-professional-theme .telu-btn-toggle-qr:hover,
+.telu-btn-toggle-qr:hover {
+    background: #f8fafc !important;
+    border-color: #b72025 !important;
+    color: #b72025 !important;
+    box-shadow: 0 4px 12px rgba(183, 32, 37, 0.12) !important;
+    transform: translateY(-1px) !important;
+}
+body.telu-public-interface .telu-btn-toggle-qr:hover svg,
+body.telu-public-result .telu-btn-toggle-qr:hover svg,
+.telu-btn-toggle-qr:hover svg {
+    stroke: #b72025 !important;
+}
+body.telu-public-interface .telu-btn-toggle-qr.active,
+body.telu-public-result .telu-btn-toggle-qr.active,
+body.telu-professional-theme .telu-btn-toggle-qr.active,
+.telu-btn-toggle-qr.active {
+    background: #fef2f2 !important;
+    border-color: #b72025 !important;
+    color: #b72025 !important;
+    box-shadow: 0 0 0 3px rgba(183, 32, 37, 0.15) !important;
+}
+body.telu-public-interface .telu-btn-toggle-qr.active svg,
+body.telu-public-result .telu-btn-toggle-qr.active svg,
+.telu-btn-toggle-qr.active svg {
+    stroke: #b72025 !important;
+}
+
+/* QR Code Panel */
+body.telu-public-interface .telu-qr-panel,
+body.telu-public-result .telu-qr-panel,
+body.telu-professional-theme .telu-qr-panel,
+.telu-qr-panel {
+    margin: 16px 0 20px !important;
+    padding: 20px !important;
+    border: 1.5px solid #fecdd3 !important;
+    border-radius: 14px !important;
+    background: #fffafa !important;
+    box-shadow: 0 4px 20px rgba(183, 32, 37, 0.08) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+}
+
+body.telu-public-interface .telu-qr-card,
+body.telu-public-result .telu-qr-card,
+body.telu-professional-theme .telu-qr-card,
+.telu-qr-card {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 22px !important;
+}
+
+body.telu-public-interface .telu-qr-image,
+body.telu-public-result .telu-qr-image,
+body.telu-professional-theme .telu-qr-image,
+.telu-qr-image {
+    padding: 10px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    width: 160px !important;
+    height: 160px !important;
+    flex-shrink: 0 !important;
+}
+
+body.telu-public-interface .telu-qr-meta,
+body.telu-public-result .telu-qr-meta,
+body.telu-professional-theme .telu-qr-meta,
+.telu-qr-meta {
+    flex: 1 1 220px !important;
+}
+
+body.telu-public-interface .telu-qr-meta strong,
+body.telu-public-result .telu-qr-meta strong,
+body.telu-professional-theme .telu-qr-meta strong,
+.telu-qr-meta strong {
+    display: block !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    color: #1e293b !important;
+    margin-bottom: 6px !important;
+}
+
+body.telu-public-interface .telu-qr-meta p,
+body.telu-public-result .telu-qr-meta p,
+body.telu-professional-theme .telu-qr-meta p,
+.telu-qr-meta p {
+    font-size: 13px !important;
+    color: #64748b !important;
+    margin: 0 0 16px !important;
+    line-height: 1.5 !important;
+}
+
+/* TOMBOL UNDUH GAMBAR PNG */
+body.telu-public-interface .telu-btn-download-qr,
+body.telu-public-result .telu-btn-download-qr,
+body.telu-professional-theme .telu-btn-download-qr,
+.telu-btn-download-qr {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 42px !important;
+    padding: 9px 20px !important;
+    background: #b72025 !important;
+    color: #ffffff !important;
+    border: 1.5px solid #b72025 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    box-shadow: 0 3px 10px rgba(183, 32, 37, 0.25) !important;
+    transition: all .2s ease !important;
+}
+body.telu-public-interface .telu-btn-download-qr svg,
+body.telu-public-result .telu-btn-download-qr svg,
+body.telu-professional-theme .telu-btn-download-qr svg,
+.telu-btn-download-qr svg {
+    stroke: #ffffff !important;
+    flex-shrink: 0 !important;
+}
+body.telu-public-interface .telu-btn-download-qr:hover,
+body.telu-public-result .telu-btn-download-qr:hover,
+body.telu-professional-theme .telu-btn-download-qr:hover,
+.telu-btn-download-qr:hover {
+    background: #95191e !important;
+    border-color: #95191e !important;
+    color: #ffffff !important;
+    box-shadow: 0 5px 14px rgba(149, 25, 30, 0.35) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Perapihan Layout Halaman Result (result.php) */
+body.telu-public-result .halves,
+.halves,
+.telu-result-grid {
+    display: flex !important;
+    gap: 16px !important;
+    width: 100% !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    margin: 0 0 20px 0 !important;
+    clear: both !important;
+    box-sizing: border-box !important;
+}
+
+body.telu-public-result .halves .half-width,
+body.telu-public-result .halves .form-item,
+.halves .half-width,
+.halves .form-item,
+.telu-result-grid p {
+    flex: 1 1 0 !important;
+    width: calc(50% - 8px) !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    float: none !important;
+    display: block !important;
+    clear: none !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 640px) {
+    body.telu-public-result .halves,
+    .halves,
+    .telu-result-grid {
+        flex-direction: column !important;
+        gap: 14px !important;
+    }
+    body.telu-public-result .halves .half-width,
+    body.telu-public-result .halves .form-item,
+    .halves .half-width,
+    .halves .form-item,
+    .telu-result-grid p {
+        width: 100% !important;
+    }
+}
+
+/* Penyesuaian Kolom Input & Tombol Copy Input bawaan Theme */
+.input-with-copy {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.input-with-copy input[type="text"],
+.input-with-copy input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-right: 48px !important;
+}
+
+.input-with-copy .copy-button,
+button.copy-button {
+    position: absolute !important;
+    right: 5px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    padding: 0 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #b72025 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    transition: all 0.2s ease !important;
+}
+
+.input-with-copy .copy-button:hover,
+button.copy-button:hover {
+    background: #fef2f2 !important;
+    border-color: #b72025 !important;
+    color: #95191e !important;
+    box-shadow: 0 2px 6px rgba(183, 32, 37, 0.2) !important;
+}
+
+body.telu-public-result #content > p,
+body.telu-public-result .content > p,
+body.telu-public-result main > p,
+body.telu-public-result form > p {
+    float: none !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 16px 0 !important;
+    clear: both !important;
+}
+
+body.telu-public-result label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+}
+
+body.telu-public-result input[type="text"],
+body.telu-public-result input[type="url"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 9px !important;
+    font-size: 15px !important;
+    padding: 10px 14px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+body.telu-public-result input[type="text"]:focus,
+body.telu-public-result input[type="url"]:focus {
+    background: #ffffff !important;
+    border-color: #b72025 !important;
+    box-shadow: 0 0 0 3px rgba(183, 32, 37, 0.12) !important;
+    outline: none !important;
+}
+
+/* Sembunyikan Bagian Duplicate QR Code Bawaan YOURLS / Infinity Squared di Bawah */
+body.telu-public-result #qr_code,
+body.telu-public-result .qr_code,
+body.telu-public-result #qr-code,
+body.telu-public-result .qr-code,
+body.telu-public-result #qr_box,
+body.telu-public-result .qr_box,
+body.telu-public-result .output > .qr-code,
+body.telu-public-result img[alt*="QR" i]:not(.telu-qr-image),
+body.telu-public-result section:has(#qr_code),
+body.telu-public-result div:has(> #qr_code):not(.telu-qr-card):not(.telu-qr-panel),
+body.telu-public-result div:has(> .qr-code):not(.telu-qr-card):not(.telu-qr-panel),
+body.telu-public-result p:has(> #qr_code) {
+    display: none !important;
+}
+
+/* Pastikan Preview QR Code Telkom University Tampil Jelas & Tidak Tersembunyi */
+body.telu-public-interface .telu-qr-image,
+body.telu-public-result .telu-qr-image,
+body.telu-professional-theme .telu-qr-image,
+img.telu-qr-image,
+.telu-qr-card img.telu-qr-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    padding: 8px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    width: 140px !important;
+    height: 140px !important;
+    min-width: 140px !important;
+    min-height: 140px !important;
+    max-width: 140px !important;
+    max-height: 140px !important;
+    flex-shrink: 0 !important;
+    object-fit: contain !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 560px) {
+    .telu-copy-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .telu-btn-copy,
+    .telu-btn-visit,
+    .telu-btn-toggle-qr {
+        width: 100% !important;
+    }
+    .telu-qr-card {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+}
+
+/* Anti-Double Header Safeguard: Jangan pernah tampilkan .telu-public-brand di halaman template/admin/infos */
+body#infos .telu-public-brand,
+body.infos .telu-public-brand,
+body.telu-page-infos .telu-public-brand,
+body.telu-page-index .telu-public-brand,
+body.telu-page-tools .telu-public-brand,
+body.telu-page-plugins .telu-public-brand,
+body#index .telu-public-brand,
+body#tools .telu-public-brand,
+body#plugins .telu-public-brand,
+.telu-brand-header ~ .telu-public-brand,
+.telu-public-brand:has(~ .telu-brand-header) {
+    display: none !important;
+}
+
+
+
+
+

@@ -17,6 +17,7 @@ define( 'YOURLS_ENTRA_EDITOR_EMAILS', array( 'sso-editor@unit.example.edu' ) );
 function yourls_add_filter() {}
 function yourls_add_action() {}
 function yourls_register_plugin_page() {}
+function yourls_shunt_default() { return '__yourls_shunt_default__'; }
 function yourls_get_option( $name ) {
     return isset( $GLOBALS['test_options'][ $name ] ) ? $GLOBALS['test_options'][ $name ] : false;
 }
@@ -29,8 +30,19 @@ function amp_keyword_owner( $keyword ) {
 
 class TeluEntraFakeDb {
     public function fetchAffected( $sql, $binds ) {
-        $GLOBALS['test_owner'][ $binds['telu_entra_keyword'] ] = $binds['telu_entra_user'];
+        if ( isset( $binds['telu_entra_keyword'], $binds['telu_entra_user'] ) ) {
+            $GLOBALS['test_owner'][ $binds['telu_entra_keyword'] ] = $binds['telu_entra_user'];
+        }
         return 1;
+    }
+
+    public function fetchObject( $sql, $binds = array() ) {
+        if ( isset( $binds['telu_keyword'] ) ) {
+            $kw = $binds['telu_keyword'];
+            $owner = isset( $GLOBALS['test_owner'][ $kw ] ) ? $GLOBALS['test_owner'][ $kw ] : null;
+            return (object) array( 'user' => $owner );
+        }
+        return (object) array( 'count' => 0, 'sum' => 0 );
     }
 }
 
@@ -54,6 +66,22 @@ check( telu_entra_display_name_from_claims( array(), 'user@example.com' ) === 'u
 check( ! telu_entra_email_is_allowed( 'user@evilexample.edu' ), 'look-alike domain should fail' );
 check( ! telu_entra_email_is_allowed( 'user@example.edu.example.com' ), 'suffix attack should fail' );
 check( ! telu_entra_email_is_allowed( 'not-an-email' ), 'invalid email should fail' );
+check( telu_entra_preserve_safe_custom_keyword( 'ampaign', 'Campaign-2026_A', true ) === 'Campaign-2026_A', 'custom keyword must preserve uppercase, hyphen and underscore' );
+check( telu_entra_preserve_safe_custom_keyword( 'unchanged', 'Ignored-Value', false ) === 'unchanged', 'ordinary keyword sanitization must remain controlled by YOURLS' );
+check( telu_entra_preserve_safe_custom_keyword( '', 'safe/path?query#fragment', true ) === 'safepathqueryfragment', 'reserved URL delimiters must be removed' );
+$shunt = yourls_shunt_default();
+check( telu_entra_validate_custom_keyword( $shunt, 'https://example.com', 'Campaign-2026_A', '' ) === $shunt, 'safe custom keyword must continue into YOURLS' );
+$invalid_keyword = telu_entra_validate_custom_keyword( $shunt, 'https://example.com', 'Campaign 2026', '' );
+check( is_array( $invalid_keyword ) && $invalid_keyword['code'] === 'error:keyword-format', 'unsupported custom keyword must fail instead of being truncated' );
+$invalid_scheme = telu_entra_validate_custom_keyword( $shunt, 'javascript:alert(1)', 'test-js', '' );
+check( is_array( $invalid_scheme ) && $invalid_scheme['code'] === 'error:invalid-scheme', 'insecure URL scheme must be rejected' );
+$self_redirect = telu_entra_validate_custom_keyword( $shunt, 'https://go.example.edu/abc', 'test-loop', '' );
+check( is_array( $self_redirect ) && $self_redirect['code'] === 'error:self-redirect', 'self-redirect loop must be rejected' );
+$reserved_kw = telu_entra_validate_custom_keyword( $shunt, 'https://example.com', 'admin', '' );
+check( is_array( $reserved_kw ) && $reserved_kw['code'] === 'error:keyword-reserved', 'system reserved keywords must be rejected' );
+check( telu_entra_owner_identity_matches( ' Member@Student.Example.edu ', 'member@student.example.edu' ), 'owner comparison must tolerate legacy case and outer whitespace' );
+check( ! telu_entra_owner_identity_matches( 'other@student.example.edu', 'member@student.example.edu' ), 'owner comparison must never match another identity' );
+check( ! telu_entra_owner_identity_matches( '', 'member@student.example.edu' ), 'blank owners must remain unclaimed' );
 
 $_SERVER['REQUEST_URI'] = '/result.php';
 $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -70,8 +98,16 @@ telu_entra_assign_authmgr_role( 'sso-editor@unit.example.edu' );
 telu_entra_assign_authmgr_role( 'sso-admin@example.edu' );
 check( in_array( 'member@student.example.edu', $amp_role_assignment['contributor'], true ), 'default OIDC role should be contributor' );
 check( in_array( 'sso-editor@unit.example.edu', $amp_role_assignment['editor'], true ), 'editor allowlist should work' );
-check( in_array( 'sso-admin@example.edu', $amp_role_assignment['administrator'], true ), 'admin allowlist should work' );
 check( ! telu_entra_current_user_is_administrator(), 'contributor must not be treated as administrator' );
+
+$dummy_checks = (object) array( 'last_result' => (object) array( 'latest' => '1.10.6' ) );
+check( telu_entra_filter_core_version_checks( $dummy_checks ) === false, 'regular user must not receive core version update checks' );
+check( telu_entra_shunt_maybe_check_core_version( '__default__' ) === false, 'regular user must not trigger core version check' );
+
+$amp_role_assignment['administrator'][] = 'member@student.example.edu';
+check( telu_entra_filter_core_version_checks( $dummy_checks ) === $dummy_checks, 'super admin must receive core version update checks' );
+check( telu_entra_shunt_maybe_check_core_version( '__default__' ) === '__default__', 'super admin must allow core version check' );
+array_pop( $amp_role_assignment['administrator'] );
 $strict_where = telu_entra_strict_owner_list_where( array(
     'sql'   => ' AND (`user` = :user OR `user` IS NULL) ',
     'binds' => array( 'user' => YOURLS_USER ),
@@ -92,6 +128,16 @@ telu_entra_verify_public_creation_owner( array( true, 'https://example.com', 'ho
 check( $GLOBALS['test_owner']['homepage-test'] === 'member@student.example.edu', 'homepage insert must be repaired to the verified Entra owner' );
 $latest_audit = json_decode( $GLOBALS['test_options'][ TELU_ENTRA_AUDIT_OPTION ], true );
 check( $latest_audit[0]['event'] === 'homepage_owner_repaired', 'homepage owner repair must be audited' );
+
+// Regular user stats access check
+check( telu_entra_current_user_owns_keyword( 'homepage-test' ) === true, 'regular user should own their created link' );
+check( telu_entra_current_user_owns_keyword( 'homepage-test+' ) === true, 'plus sign in stats url should be stripped and allowed' );
+$GLOBALS['test_owner']['someone-else-link'] = 'other@student.example.edu';
+check( telu_entra_current_user_owns_keyword( 'someone-else-link' ) === false, 'regular user must not own other users links' );
+$amp_role_assignment['administrator'][] = 'member@student.example.edu';
+check( telu_entra_current_user_owns_keyword( 'someone-else-link' ) === true, 'admin user should be allowed to view stats for any link' );
+array_pop( $amp_role_assignment['administrator'] );
+check( telu_entra_current_user_owns_keyword( 'someone-else-link' ) === false, 'revoked admin role should revert to normal ownership checks' );
 
 $random = random_bytes( 64 );
 check( hash_equals( $random, telu_entra_base64url_decode( telu_entra_base64url_encode( $random ) ) ), 'base64url roundtrip' );
@@ -114,6 +160,17 @@ check( telu_entra_safe_return_path( '/' ) === '/', 'homepage return path should 
 check( telu_entra_safe_return_path( '/abc123' ) === '/admin/', 'shortlink must not be accepted as a post-login return path' );
 check( telu_entra_safe_return_path( '//evil.example/admin/' ) === '/admin/', 'protocol-relative return path should fail' );
 check( telu_entra_safe_return_path( 'https://evil.example/admin/' ) === '/admin/', 'absolute return URL should fail' );
+
+$_SERVER['REQUEST_URI'] = '/';
+check( telu_entra_is_root_homepage_request(), 'slash should be detected as root homepage' );
+$_SERVER['REQUEST_URI'] = '/index.php';
+check( telu_entra_is_root_homepage_request(), 'index.php should be detected as root homepage' );
+$_SERVER['REQUEST_URI'] = '/admin/';
+check( ! telu_entra_is_root_homepage_request(), 'admin should not be detected as root homepage' );
+$_SERVER['REQUEST_URI'] = '/abc123';
+check( ! telu_entra_is_root_homepage_request(), 'shortlink keyword should not be detected as root homepage' );
+$_SERVER['REQUEST_URI'] = '/result.php';
+check( ! telu_entra_is_root_homepage_request(), 'result.php should not be detected as root homepage' );
 
 // Prove the JWK-to-PEM converter by signing and verifying with a generated RSA key.
 $private = openssl_pkey_new( array( 'private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA ) );
@@ -139,4 +196,22 @@ check( telu_entra_read_signed_cookie( TELU_ENTRA_AUTH_COOKIE )['email'] === $pay
 $_COOKIE[ TELU_ENTRA_AUTH_COOKIE ] = $encoded . '.' . substr( $signature, 0, -1 ) . ( substr( $signature, -1 ) === 'A' ? 'B' : 'A' );
 check( telu_entra_read_signed_cookie( TELU_ENTRA_AUTH_COOKIE ) === null, 'tampered payload should fail' );
 
+// Theme DOM script & CSS assertions
+$theme_script = telu_yourls_theme_dom_script( false );
+check( strpos( $theme_script, 'bookmarklet' ) !== false, 'theme script must include bookmarklet removal logic' );
+check( strpos( $theme_script, 'Direktorat Pusat Teknologi Informasi' ) !== false, 'theme script must include official directorate name' );
+check( strpos( $theme_script, 'attachCopyAndQr' ) !== false, 'theme script must include copy and QR generator' );
+check( strpos( $theme_script, 'telu_logout' ) !== false, 'theme script must include public logout link' );
+check( strpos( $theme_script, 'isInfos' ) !== false, 'theme script must detect stats page to prevent double header' );
+
+$theme_css = file_get_contents( dirname( __DIR__ ) . '/assets/theme.css' );
+check( strpos( $theme_css, '.bookmarklet' ) !== false, 'theme css must hide bookmarklet elements' );
+check( strpos( $theme_css, 'min-width: 680px' ) !== false, 'theme css must ensure admin table responsiveness' );
+check( strpos( $theme_css, 'telu-role-user .notice:has(a[href*="yourls.org"])' ) !== false, 'theme css must hide core update notice for regular users' );
+check( strpos( $theme_css, '.telu-action-group' ) !== false, 'theme css must include action group styles' );
+check( strpos( $theme_css, '.telu-logout-link' ) !== false, 'theme css must include navbar logout styles' );
+check( strpos( $theme_css, 'body#infos .telu-public-brand' ) !== false, 'theme css must hide public brand header on stats page' );
+
 echo "All smoke tests passed.\n";
+
+
